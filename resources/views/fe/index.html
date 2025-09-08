@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>E-Letter Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-100 font-sans">
+  <div class="min-h-screen flex">
+    <!-- Sidebar -->
+    <aside class="fixed inset-y-0 left-0 w-64 bg-white shadow-md p-4 flex flex-col justify-between">
+      <div>
+        <h2 class="text-xl font-bold text-purple-600 mb-6">📨 E-Letter</h2>
+        <ul class="space-y-4">
+          <li class="flex items-center gap-3 text-gray-700 hover:text-purple-500 cursor-pointer">📊 <span>Dashboard</span></li>
+          <li class="flex items-center gap-3 text-gray-700 hover:text-purple-500 cursor-pointer">📥 <span>Surat Masuk</span></li>
+          <li class="flex items-center gap-3 text-gray-700 hover:text-purple-500 cursor-pointer">📤 <span>Surat Keluar</span></li>
+          <li class="flex items-center gap-3 text-gray-700 hover:text-purple-500 cursor-pointer">📑 <span>Template Surat</span></li>
+          <li class="flex items-center gap-3 text-gray-700 hover:text-purple-500 cursor-pointer">📝 <span>Disposisi</span></li>
+          <li class="flex items-center gap-3 text-gray-700 hover:text-purple-500 cursor-pointer">📈 <span>Laporan</span></li>
+          <li class="flex items-center gap-3 text-gray-700 hover:text-purple-500 cursor-pointer">⚙️ <span>Pengaturan</span></li>
+        </ul>
+      </div>
+      <div class="flex items-center gap-3 mt-6">
+        <img src="https://i.pravatar.cc/40" alt="user" class="w-10 h-10 rounded-full"/>
+        <div>
+          <p class="font-semibold">Mr. Soni H</p>
+          <button class="text-sm text-red-500">Logout</button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="flex-1 ml-64 p-6">
+      <!-- Navbar -->
+      <div class="flex justify-between items-center bg-white p-4 rounded-lg shadow mb-6">
+        <h1 class="text-xl font-bold">Dashboard</h1>
+        <div class="flex items-center gap-4">
+          <button class="p-2 bg-gray-200 rounded-full">🔔</button>
+          <img src="https://i.pravatar.cc/40" class="w-10 h-10 rounded-full"/>
+        </div>
+      </div>
+
+      <!-- Top Cards -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+        <div class="bg-purple-500 text-white rounded-2xl p-6 shadow-lg">
+          <p class="text-sm">Surat Masuk</p>
+          <p class="text-3xl font-bold">120</p>
+        </div>
+        <div class="bg-cyan-500 text-white rounded-2xl p-6 shadow-lg">
+          <p class="text-sm">Surat Keluar</p>
+          <p class="text-3xl font-bold">85</p>
+        </div>
+        <div class="bg-blue-500 text-white rounded-2xl p-6 shadow-lg">
+          <p class="text-sm">Disposisi</p>
+          <p class="text-3xl font-bold">40</p>
+        </div>
+      </div>
+
+      <!-- Middle Section -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+        <!-- Bar Chart -->
+        <div class="lg:col-span-2 bg-white p-4 rounded-2xl shadow-md">
+          <p class="font-semibold mb-2">📊 Statistik Surat Bulanan</p>
+          <div class="h-64">
+            <canvas id="barChart"></canvas>
+          </div>
+        </div>
+        <!-- Pie Chart -->
+        <div class="bg-white p-4 rounded-2xl shadow-md">
+          <p class="font-semibold mb-2">🥧 Distribusi Surat</p>
+          <div class="h-64">
+            <canvas id="pieChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Table Surat Terbaru -->
+      <div class="bg-white p-4 rounded-2xl shadow-md">
+        <p class="font-semibold mb-3">📥 Surat Masuk Terbaru</p>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm border-collapse">
+            <thead class="text-gray-500 border-b">
+              <tr>
+                <th class="text-left p-2">No Surat</th>
+                <th class="text-left p-2">Pengirim</th>
+                <th class="text-left p-2">Perihal</th>
+                <th class="text-left p-2">Tanggal</th>
+              </tr>
+            </thead>
+            <tbody class="text-gray-700">
+              <tr class="border-b"><td class="p-2">001/UNIV/2024</td><td>Fakultas Teknik</td><td>Undangan Rapat</td><td>01-09-2024</td></tr>
+              <tr class="border-b"><td class="p-2">002/UNIV/2024</td><td>Rektorat</td><td>Pengumuman Libur</td><td>05-09-2024</td></tr>
+              <tr><td class="p-2">003/UNIV/2024</td><td>Fakultas Hukum</td><td>Permohonan Data</td><td>07-09-2024</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chart.js -->
+  <script>
+    // Bar Chart
+    const ctx = document.getElementById("barChart").getContext("2d");
+    new Chart(ctx, {
+      type: "bar",
+      data: {
+        labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+        datasets: [
+          {
+            label: "Surat Masuk",
+            data: [20, 35, 40, 25, 50, 30],
+            backgroundColor: "rgba(139, 92, 246, 0.7)"
+          },
+          {
+            label: "Surat Keluar",
+            data: [15, 25, 30, 20, 40, 25],
+            backgroundColor: "rgba(34, 211, 238, 0.7)"
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { position: "bottom" } },
+        scales: { y: { beginAtZero: true } }
+      }
+    });
+
+    // Pie Chart
+    const pieCtx = document.getElementById("pieChart").getContext("2d");
+    new Chart(pieCtx, {
+      type: "pie",
+      data: {
+        labels: ["Fakultas Teknik", "Fakultas Hukum", "Fakultas Ekonomi"],
+        datasets: [{
+          data: [40, 30, 30],
+          backgroundColor: [
+            "rgba(139, 92, 246, 0.7)",
+            "rgba(34, 211, 238, 0.7)",
+            "rgba(59, 130, 246, 0.7)"
+          ],
+          borderColor: ["#fff","#fff","#fff"],
+          borderWidth: 2
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { position: "bottom" } }
+      }
+    });
+  </script>
+</body>
+</html>
