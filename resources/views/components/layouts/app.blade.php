@@ -28,10 +28,10 @@
       <div class="flex items-center justify-between bg-white p-4 rounded-lg shadow mb-6">
         <div class="flex items-center gap-3">
           {{-- Burger button hanya tampil di mobile --}}
-          <button id="menuBtn" class="md:hidden p-2 rounded-lg bg-purple-500 text-white focus:outline-none focus:ring">
+          <button id="menuBtn" class="md:hidden p-2 rounded-lg bg-blue-500 text-white focus:outline-none focus:ring">
             ☰
           </button>
-          <h1 class="text-xl font-bold">Dashboard</h1>
+          <h1 class="text-xl font-bold">E-Letter UNLA</h1>
         </div>
         <div class="flex items-center gap-4">
           <button class="p-2 bg-gray-200 rounded-full">🔔</button>
