@@ -5,6 +5,7 @@ namespace App\Livewire;
 use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\Role;
+use Illuminate\Support\Facades\Auth;
 
 class RoleManagement extends Component
 {
@@ -35,8 +36,11 @@ class RoleManagement extends Component
     public function updatingSearch() { $this->resetPage(); }
     public function updatingPerPage() { $this->resetPage(); }
 
+    // Render dengan permission check
     public function render()
     {
+        $this->authorizePermission('manage_users');
+
         $query = Role::query();
 
         if ($this->search) {
@@ -55,6 +59,8 @@ class RoleManagement extends Component
 
     public function sortBy($field)
     {
+        $this->authorizePermission('manage_users');
+
         if ($this->sortField === $field) {
             $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
         } else {
@@ -66,6 +72,8 @@ class RoleManagement extends Component
 
     public function openModal($edit = false, $id = null)
     {
+        $this->authorizePermission('manage_users');
+
         $this->resetForm();
         $this->isEdit = $edit;
         $this->isMinimized = false;
@@ -99,9 +107,11 @@ class RoleManagement extends Component
     public function restore() { $this->isMinimized = false; }
     public function toggleFullscreen() { $this->isFullscreen = !$this->isFullscreen; }
 
-    // CRUD
+    // CRUD dengan permission check
     public function store()
     {
+        $this->authorizePermission('manage_users');
+
         $this->validate();
 
         Role::create([
@@ -116,6 +126,8 @@ class RoleManagement extends Component
 
     public function update()
     {
+        $this->authorizePermission('manage_users');
+
         $this->validate([
             'name' => 'required|min:3|unique:roles,name,' . $this->roleId,
             'description' => 'nullable|string|max:255',
@@ -134,8 +146,21 @@ class RoleManagement extends Component
 
     public function delete($id)
     {
+        $this->authorizePermission('manage_users');
+
         Role::findOrFail($id)->delete();
         session()->flash('success', 'Role berhasil dihapus!');
         $this->resetPage();
+    }
+
+    /**
+     * Helper: Cek permission user
+     */
+    private function authorizePermission($permissionName)
+    {
+        $user = Auth::user();
+        if (!$user || !$user->hasPermission($permissionName)) {
+            abort(403, 'Anda tidak memiliki akses ke fitur ini.');
+        }
     }
 }

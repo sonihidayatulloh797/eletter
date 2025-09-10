@@ -24,4 +24,16 @@ class Role extends Model
     {
         return $this->belongsToMany(Permission::class, 'role_permission', 'role_id', 'permission_id');
     }
+
+    public function can($permissionName, $arguments = [])
+    {
+        // Jika Super Admin / admin, otomatis boleh akses semua
+        if ($this->hasRole('admin')) {
+            return true;
+        }
+
+        // Cek apakah role memiliki permission
+        return $this->role
+            && $this->role->permissions->contains('name', $permissionName);
+    }
 }

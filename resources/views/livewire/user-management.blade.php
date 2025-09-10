@@ -45,6 +45,7 @@
         <table class="w-full text-xs sm:text-sm">
             <thead class="text-gray-600 border-b bg-gray-50/70">
                 <tr>
+                    <th class="p-3 text-left">No</th>
                     <th class="p-3 text-left cursor-pointer" wire:click="sortBy('name')">
                         Nama {!! $sortField === 'name' ? ($sortDirection === 'asc' ? '⬆️' : '⬇️') : '' !!}
                     </th>
@@ -56,8 +57,11 @@
                 </tr>
             </thead>
             <tbody class="text-gray-700">
-                @forelse ($users as $user)
+                @forelse ($users as $index => $user)
                     <tr class="border-b hover:bg-gray-50/70 transition">
+                        <td class="p-3">
+                            {{ $users->firstItem() + $index }}
+                        </td>
                         <td class="p-3 font-medium">{{ $user->name }}</td>
                         <td class="p-3 hidden sm:table-cell">{{ $user->email }}</td>
                         <td class="p-3">
@@ -81,13 +85,14 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="4" class="text-center p-4 text-gray-500">
+                        <td colspan="5" class="text-center p-4 text-gray-500">
                             🙅 Belum ada data user.
                         </td>
                     </tr>
                 @endforelse
             </tbody>
         </table>
+
     </div>
 
     <div class="mt-4">

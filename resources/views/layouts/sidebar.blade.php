@@ -4,13 +4,6 @@
   x-data="{ openUser: false }"
 >
 
-{{-- <aside
-  id="sidebar"
-  class="fixed inset-y-0 left-0 w-72 bg-white shadow-md p-4 flex flex-col justify-between
-         transform -translate-x-full md:translate-x-0 transition-transform duration-300 z-50
-         overflow-y-auto will-change-transform"
-> --}}
-
   <div class="overflow-y-auto">
     <h2 class="text-xl font-bold text-blue-600 mb-6">📨 E-Letter</h2>
     <ul class="space-y-4">
