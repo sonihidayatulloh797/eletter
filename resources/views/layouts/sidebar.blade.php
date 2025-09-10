@@ -1,7 +1,16 @@
 <aside
   id="sidebar"
-  class="fixed inset-y-0 left-0 w-64 bg-white shadow-md p-4 flex flex-col justify-between transform -translate-x-full md:translate-x-0 transition-transform duration-300 z-50"
+  class="fixed inset-y-0 left-0 w-64 bg-white shadow-md p-4 flex flex-col justify-between transform -translate-x-full md:translate-x-0 transition-transform duration-300 z-50 overflow-y-auto will-change-transform"
+  x-data="{ openUser: false }"
 >
+
+{{-- <aside
+  id="sidebar"
+  class="fixed inset-y-0 left-0 w-72 bg-white shadow-md p-4 flex flex-col justify-between
+         transform -translate-x-full md:translate-x-0 transition-transform duration-300 z-50
+         overflow-y-auto will-change-transform"
+> --}}
+
   <div class="overflow-y-auto">
     <h2 class="text-xl font-bold text-blue-600 mb-6">📨 E-Letter</h2>
     <ul class="space-y-4">
@@ -41,11 +50,48 @@
         </a>
       </li>
 
-      {{-- 🔽 Tambahan Menu User Management --}}
+      {{-- 🔽 Menu Manajemen User dengan submenu --}}
       <li>
-        <a href="/manajemen-user" class="flex items-center gap-3 text-gray-700 hover:text-blue-500">
-          👥 <span>Manajemen User</span>
-        </a>
+        <button
+          @click="openUser = !openUser"
+          class="flex items-center justify-between w-full text-gray-700 hover:text-blue-500"
+        >
+          <span class="flex items-center gap-3">
+            👥 <span>Manajemen User</span>
+          </span>
+          <svg
+            :class="{ 'rotate-180': openUser }"
+            class="w-4 h-4 transform transition-transform duration-300"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+          </svg>
+        </button>
+
+        <ul
+          x-show="openUser"
+          x-cloak
+          x-transition:enter="transition ease-out duration-300"
+          x-transition:enter-start="opacity-0 transform -translate-y-2"
+          x-transition:enter-end="opacity-100 transform translate-y-0"
+          x-transition:leave="transition ease-in duration-200"
+          x-transition:leave-start="opacity-100 transform translate-y-0"
+          x-transition:leave-end="opacity-0 transform -translate-y-2"
+          class="mt-2 ml-6 space-y-2 text-sm"
+        >
+          <li>
+            <a href="/manajemen-role" class="flex items-center gap-2 text-gray-600 hover:text-blue-500">
+              🔑 <span>Role</span>
+            </a>
+          </li>
+          <li>
+            <a href="/manajemen-user" class="flex items-center gap-2 text-gray-600 hover:text-blue-500">
+              👤 <span>User</span>
+            </a>
+          </li>
+        </ul>
       </li>
     </ul>
   </div>

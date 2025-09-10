@@ -12,12 +12,21 @@ class UserManagement extends Component
 {
     use WithPagination;
 
+    // Form fields
     public $name, $email, $password, $role, $userId;
     public $isEdit = false;
     public $showModal = false;
-    // new
+
+    // Modal states (macOS style)
     public $isMinimized = false;
     public $isFullscreen = false;
+
+    // Table controls
+    public $search = '';
+    public $filterRole = '';
+    public $perPage = 10;
+    public $sortField = 'name';
+    public $sortDirection = 'asc';
 
     protected $rules = [
         'name' => 'required|min:3',
@@ -26,27 +35,65 @@ class UserManagement extends Component
         'role' => 'required'
     ];
 
+    // Reset pagination when search/filter/perPage updated
+    public function updatingSearch() { $this->resetPage(); }
+    public function updatingFilterRole() { $this->resetPage(); }
+    public function updatingPerPage() { $this->resetPage(); }
+
     public function render()
     {
+        $query = User::with('role');
+
+        // Search by name/email
+        if ($this->search) {
+            $query->where(function($q) {
+                $q->where('name', 'like', '%'.$this->search.'%')
+                  ->orWhere('email', 'like', '%'.$this->search.'%');
+            });
+        }
+
+        // Filter by role
+        if ($this->filterRole) {
+            $query->where('role_id', $this->filterRole);
+        }
+
+        // Allowed sort fields
+        $allowedSort = ['name', 'email', 'created_at'];
+        $sortField = in_array($this->sortField, $allowedSort) ? $this->sortField : 'name';
+
+        $users = $query->orderBy($sortField, $this->sortDirection)
+                       ->paginate($this->perPage);
+
         return view('livewire.user-management', [
-            'users' => User::with('role')->paginate(10),
+            'users' => $users,
             'roles' => Role::all()
         ]);
+    }
+
+    public function sortBy($field)
+    {
+        if ($this->sortField === $field) {
+            $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
+        } else {
+            $this->sortField = $field;
+            $this->sortDirection = 'asc';
+        }
+        $this->resetPage();
     }
 
     public function openModal($edit = false, $id = null)
     {
         $this->resetForm();
         $this->isEdit = $edit;
-        $this->isMinimized = false;    // reset ketika membuka modal
-        $this->isFullscreen = false;   // reset juga
+        $this->isMinimized = false;
+        $this->isFullscreen = false;
 
         if ($edit && $id) {
             $user = User::findOrFail($id);
             $this->userId = $user->id;
             $this->name = $user->name;
             $this->email = $user->email;
-            $this->role = $user->role_id; // pastikan field di DB
+            $this->role = $user->role_id;
         }
 
         $this->showModal = true;
@@ -67,14 +114,20 @@ class UserManagement extends Component
         $this->isEdit = false;
     }
 
-    // new: minimize / restore / fullscreen
+    // macOS modal controls
     public function minimize()
     {
         $this->isMinimized = true;
     }
+
     public function toggleFullscreen()
     {
         $this->isFullscreen = ! $this->isFullscreen;
+    }
+
+    public function restore()
+    {
+        $this->isMinimized = false;
     }
 
     public function store()
