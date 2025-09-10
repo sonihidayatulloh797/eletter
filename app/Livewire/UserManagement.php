@@ -15,6 +15,9 @@ class UserManagement extends Component
     public $name, $email, $password, $role, $userId;
     public $isEdit = false;
     public $showModal = false;
+    // new
+    public $isMinimized = false;
+    public $isFullscreen = false;
 
     protected $rules = [
         'name' => 'required|min:3',
@@ -35,6 +38,8 @@ class UserManagement extends Component
     {
         $this->resetForm();
         $this->isEdit = $edit;
+        $this->isMinimized = false;    // reset ketika membuka modal
+        $this->isFullscreen = false;   // reset juga
 
         if ($edit && $id) {
             $user = User::findOrFail($id);
@@ -60,6 +65,16 @@ class UserManagement extends Component
         $this->role = '';
         $this->userId = null;
         $this->isEdit = false;
+    }
+
+    // new: minimize / restore / fullscreen
+    public function minimize()
+    {
+        $this->isMinimized = true;
+    }
+    public function toggleFullscreen()
+    {
+        $this->isFullscreen = ! $this->isFullscreen;
     }
 
     public function store()

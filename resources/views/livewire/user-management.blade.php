@@ -1,46 +1,51 @@
-<x-layouts.app>
-<div class="p-4 sm:p-6 font-sans bg-gray-50 text-gray-800 min-h-screen">
-    <h2 class="text-2xl font-semibold mb-6">👥 Manajemen User</h2>
+<div class="p-4 sm:p-6 bg-gray-100 min-h-screen">
+    <h2 class="text-lg sm:text-xl font-bold mb-6 text-gray-800">👥 Manajemen User</h2>
 
-    <!-- Alert Success -->
     @if (session()->has('success'))
-        <div class="bg-green-100 text-green-700 p-3 rounded-md mb-4 shadow-sm">
-            {{ session('success') }}
-        </div>
+    <div
+        class="bg-green-50 text-green-700 px-4 py-2 rounded-2xl mb-4 shadow-sm border border-green-200 text-sm sm:text-base">
+        ✅ {{ session('success') }}
+    </div>
     @endif
 
-    <!-- Tambah User Button -->
+    <!-- Tombol Tambah -->
     <button wire:click="openModal(false)"
-        class="bg-blue-500 hover:bg-blue-400 text-white font-medium px-4 py-2 rounded-lg shadow-sm transition duration-200 mb-4">
-        Tambah User
+        class="bg-gradient-to-r from-blue-400 to-blue-500 text-white px-4 py-2 rounded-xl mb-5 text-sm sm:text-base shadow hover:from-blue-500 hover:to-blue-600 transition-all duration-200">
+        + Tambah User
     </button>
 
-    <!-- Tabel User -->
-    <div class="overflow-x-auto rounded-lg shadow-sm">
-        <table class="min-w-full border-collapse bg-white">
-            <thead class="bg-gray-100 text-gray-600">
+    <!-- Card Table User -->
+    <div class="overflow-x-auto bg-white/80 backdrop-blur-md rounded-2xl shadow-lg border border-gray-200">
+        <table class="w-full text-xs sm:text-sm">
+            <thead class="text-gray-600 border-b bg-gray-50/70">
                 <tr>
-                    <th class="px-4 py-2 rounded-tl-lg">#</th>
-                    <th class="px-4 py-2">Nama</th>
-                    <th class="px-4 py-2">Email</th>
-                    <th class="px-4 py-2">Role</th>
-                    <th class="px-4 py-2 rounded-tr-lg">Aksi</th>
+                    <th class="p-3 text-left">Nama</th>
+                    <th class="p-3 text-left hidden sm:table-cell">Email</th>
+                    <th class="p-3 text-left">Role</th>
+                    <th class="p-3 text-left">Aksi</th>
                 </tr>
             </thead>
-            <tbody>
-                @foreach ($users as $index => $user)
-                    <tr class="hover:bg-gray-50 transition">
-                        <td class="px-4 py-2">{{ $index + 1 }}</td>
-                        <td class="px-4 py-2">{{ $user->name }}</td>
-                        <td class="px-4 py-2">{{ $user->email }}</td>
-                        <td class="px-4 py-2">{{ $user->role->name ?? '-' }}</td>
-                        <td class="px-4 py-2 flex gap-2">
-                            <button wire:click="openModal(true, {{ $user->id }})"
-                                class="text-blue-500 hover:underline">Edit</button>
-                            <button wire:click="delete({{ $user->id }})"
-                                class="text-red-500 hover:underline">Hapus</button>
-                        </td>
-                    </tr>
+            <tbody class="text-gray-700">
+                @foreach ($users as $user)
+                <tr class="border-b hover:bg-gray-50/70 transition">
+                    <td class="p-3">
+                        <p class="font-medium text-gray-800">{{ $user->name }}</p>
+                        <p class="text-xs text-gray-500 sm:hidden">{{ $user->email }}</p>
+                    </td>
+                    <td class="p-3 hidden sm:table-cell">{{ $user->email }}</td>
+                    <td class="p-3">{{ $user->role->name ?? '-' }}</td>
+                    <td class="p-3 flex flex-wrap gap-2">
+                        <button wire:click="openModal(true, {{ $user->id }})"
+                            class="px-3 py-1 rounded-xl text-xs bg-gradient-to-r from-yellow-400 to-yellow-500 text-white shadow hover:from-yellow-500 hover:to-yellow-600 transition">
+                            ✏️ Edit
+                        </button>
+                        <button wire:click="delete({{ $user->id }})"
+                            class="px-3 py-1 rounded-xl text-xs bg-gradient-to-r from-red-400 to-red-500 text-white shadow hover:from-red-500 hover:to-red-600 transition"
+                            onclick="return confirm('Yakin ingin menghapus user ini?')">
+                            🗑️ Hapus
+                        </button>
+                    </td>
+                </tr>
                 @endforeach
             </tbody>
         </table>
@@ -51,36 +56,100 @@
         {{ $users->links() }}
     </div>
 
-    <!-- Modal -->
-    @if($showModal)
-    <div class="fixed inset-0 bg-black bg-opacity-20 backdrop-blur-sm flex items-center justify-center z-50 transition-opacity duration-300 px-4">
-        <div class="bg-white rounded-xl p-6 w-full max-w-md sm:max-w-lg md:max-w-xl shadow-xl transform transition-all duration-300">
-            <h3 class="text-xl font-semibold mb-4">{{ $isEdit ? 'Edit User' : 'Tambah User' }}</h3>
-
-            <form wire:submit.prevent="{{ $isEdit ? 'update' : 'store' }}" class="space-y-3">
-                <input type="text" wire:model="name" placeholder="Nama"
-                    class="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-blue-200 focus:outline-none">
-                <input type="email" wire:model="email" placeholder="Email"
-                    class="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-blue-200 focus:outline-none">
-                <input type="password" wire:model="password" placeholder="Password"
-                    class="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-blue-200 focus:outline-none">
-
-                <select wire:model="role" class="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-blue-200 focus:outline-none">
-                    <option value="">-- Pilih Role --</option>
-                    @foreach ($roles as $role)
-                        <option value="{{ $role->id }}">{{ $role->name }}</option>
-                    @endforeach
-                </select>
-
-                <div class="flex flex-col sm:flex-row justify-end gap-3 mt-4">
-                    <button type="button" wire:click="closeModal"
-                        class="bg-gray-300 hover:bg-gray-400 px-4 py-2 rounded-lg transition w-full sm:w-auto">Batal</button>
-                    <button type="submit"
-                        class="bg-blue-500 hover:bg-blue-400 text-white px-4 py-2 rounded-lg transition w-full sm:w-auto">{{ $isEdit ? 'Update' : 'Simpan' }}</button>
+<!-- Modal -->
+@if ($showModal)
+    <div class="fixed inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm z-50 px-4">
+        {{-- MINIMIZED BAR --}}
+        @if($isMinimized)
+            <div class="fixed bottom-6 left-6 z-50">
+                <div
+                    class="flex items-center gap-3 bg-white/90 backdrop-blur-md rounded-full px-3 py-2 shadow-lg border border-gray-200 cursor-pointer"
+                    wire:click="restore"
+                    role="button"
+                    aria-label="Restore window">
+                    <div class="flex items-center gap-2">
+                        <button wire:click.stop="closeModal" class="w-3 h-3 rounded-full bg-red-500 hover:bg-red-600" aria-label="Close"></button>
+                        <button wire:click.stop="restore" class="w-3 h-3 rounded-full bg-yellow-400 hover:bg-yellow-500" aria-label="Restore"></button>
+                        <button wire:click.stop="toggleFullscreen" class="w-3 h-3 rounded-full bg-green-500 hover:bg-green-600" aria-label="Toggle fullscreen"></button>
+                    </div>
+                    <span class="ml-3 text-sm font-medium text-gray-800">
+                        {{ $isEdit ? '✏️ Edit User' : '➕ Tambah User' }}
+                    </span>
                 </div>
-            </form>
-        </div>
+            </div>
+        @else
+            {{-- NORMAL / FULLSCREEN MODAL --}}
+            <div
+                class="@if($isFullscreen) w-full max-w-none h-[90vh] max-h-[90vh] rounded-xl @else w-full max-w-lg rounded-3xl @endif
+                       bg-white/95 backdrop-blur-xl shadow-2xl border border-gray-200 overflow-hidden transition-all duration-200">
+                <!-- Header ala macOS -->
+                <div class="flex items-center justify-between px-3 py-2 bg-gray-50 border-b">
+                    <div class="flex items-center space-x-2">
+                        <button wire:click="closeModal" class="w-3 h-3 rounded-full bg-red-500 hover:bg-red-600" aria-label="Close"></button>
+                        <button wire:click="minimize" class="w-3 h-3 rounded-full bg-yellow-400 hover:bg-yellow-500" aria-label="Minimize"></button>
+                        <button wire:click="toggleFullscreen" class="w-3 h-3 rounded-full bg-green-500 hover:bg-green-600" aria-label="Toggle fullscreen"></button>
+                    </div>
+
+                    <h3 class="text-sm sm:text-base font-semibold text-gray-700">
+                        {{ $isEdit ? '✏️ Edit User' : '➕ Tambah User' }}
+                    </h3>
+
+                    <div class="w-6"></div> {{-- spacer supaya judul center --}}
+                </div>
+
+                <!-- Body -->
+                <div class="p-4 sm:p-6 overflow-auto h-full">
+                    <form wire:submit.prevent="{{ $isEdit ? 'update' : 'store' }}" class="space-y-4">
+                        <div>
+                            <label class="block mb-1 text-sm font-medium text-gray-600">Nama</label>
+                            <input type="text" wire:model="name"
+                                   class="w-full border border-gray-300 rounded-xl p-2 text-sm focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition">
+                            @error('name') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                        </div>
+
+                        <div>
+                            <label class="block mb-1 text-sm font-medium text-gray-600">Email</label>
+                            <input type="email" wire:model="email"
+                                   class="w-full border border-gray-300 rounded-xl p-2 text-sm focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition">
+                            @error('email') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                        </div>
+
+                        <div>
+                            <label class="block mb-1 text-sm font-medium text-gray-600">Password</label>
+                            <input type="password" wire:model="password"
+                                   class="w-full border border-gray-300 rounded-xl p-2 text-sm focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition"
+                                   placeholder="{{ $isEdit ? 'Kosongkan jika tidak diubah' : '' }}">
+                            @error('password') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                        </div>
+
+                        <div>
+                            <label class="block mb-1 text-sm font-medium text-gray-600">Role</label>
+                            <select wire:model="role"
+                                    class="w-full border border-gray-300 rounded-xl p-2 text-sm focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition">
+                                <option value="">-- Pilih Role --</option>
+                                @foreach ($roles as $r)
+                                    <option value="{{ $r->id }}">{{ $r->name }}</option>
+                                @endforeach
+                            </select>
+                            @error('role') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                        </div>
+
+                        <div class="flex justify-end gap-3 pt-3">
+                            <button type="button" wire:click="closeModal"
+                                class="px-4 py-2 rounded-xl bg-gray-200 hover:bg-gray-300 text-gray-700 text-sm shadow-sm transition">
+                                Batal
+                            </button>
+                            <button type="submit"
+                                class="px-4 py-2 rounded-xl bg-gradient-to-r from-blue-400 to-blue-500 text-white text-sm shadow hover:from-blue-500 hover:to-blue-600 transition">
+                                Simpan
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        @endif
     </div>
-    @endif
+@endif
+
+
 </div>
-</x-layouts.app>
