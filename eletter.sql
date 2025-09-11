@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.2
+-- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: localhost
--- Generation Time: Sep 10, 2025 at 07:10 AM
--- Server version: 9.3.0
--- PHP Version: 8.3.20
+-- Host: localhost:3306
+-- Generation Time: Sep 11, 2025 at 10:58 AM
+-- Server version: 8.0.30
+-- PHP Version: 8.2.0
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -28,10 +28,18 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `cache` (
-  `key` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `value` mediumtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `key` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `value` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `expiration` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `cache`
+--
+
+INSERT INTO `cache` (`key`, `value`, `expiration`) VALUES
+('laravel-cache-ac3478d69a3c81fa62e60f5c3696165a4e5e6ac4', 'i:1;', 1757584917),
+('laravel-cache-ac3478d69a3c81fa62e60f5c3696165a4e5e6ac4:timer', 'i:1757584917;', 1757584917);
 
 -- --------------------------------------------------------
 
@@ -40,8 +48,8 @@ CREATE TABLE `cache` (
 --
 
 CREATE TABLE `cache_locks` (
-  `key` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `owner` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `key` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `owner` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `expiration` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -69,11 +77,11 @@ CREATE TABLE `disposisi` (
 
 CREATE TABLE `failed_jobs` (
   `id` bigint UNSIGNED NOT NULL,
-  `uuid` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `connection` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `queue` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `payload` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
-  `exception` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `uuid` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `connection` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `queue` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `payload` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `exception` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `failed_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -85,8 +93,8 @@ CREATE TABLE `failed_jobs` (
 
 CREATE TABLE `jobs` (
   `id` bigint UNSIGNED NOT NULL,
-  `queue` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `payload` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `queue` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `payload` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `attempts` tinyint UNSIGNED NOT NULL,
   `reserved_at` int UNSIGNED DEFAULT NULL,
   `available_at` int UNSIGNED NOT NULL,
@@ -100,13 +108,13 @@ CREATE TABLE `jobs` (
 --
 
 CREATE TABLE `job_batches` (
-  `id` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `total_jobs` int NOT NULL,
   `pending_jobs` int NOT NULL,
   `failed_jobs` int NOT NULL,
-  `failed_job_ids` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
-  `options` mediumtext COLLATE utf8mb4_unicode_ci,
+  `failed_job_ids` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `options` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `cancelled_at` int DEFAULT NULL,
   `created_at` int NOT NULL,
   `finished_at` int DEFAULT NULL
@@ -120,7 +128,7 @@ CREATE TABLE `job_batches` (
 
 CREATE TABLE `migrations` (
   `id` int UNSIGNED NOT NULL,
-  `migration` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `migration` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `batch` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -149,9 +157,15 @@ CREATE TABLE `permissions` (
 --
 
 INSERT INTO `permissions` (`id`, `name`, `description`) VALUES
-(1, 'manage_users', 'Mengelola data user'),
-(2, 'manage_letters', 'Mengelola surat masuk & keluar'),
-(3, 'view_reports', 'Melihat laporan');
+(1, 'view_dashboard', 'Melihat dashboard utama'),
+(2, 'manage_letters_in', 'Mengelola surat masuk'),
+(3, 'manage_letters_out', 'Mengelola surat keluar'),
+(4, 'manage_templates', 'Mengelola template surat'),
+(5, 'manage_disposition', 'Mengelola disposisi surat'),
+(6, 'view_reports', 'Melihat laporan'),
+(7, 'manage_settings', 'Mengatur konfigurasi aplikasi'),
+(8, 'manage_users', 'Mengelola data user'),
+(9, 'manage_roles', 'Mengelola role dan permission');
 
 -- --------------------------------------------------------
 
@@ -192,10 +206,24 @@ CREATE TABLE `role_permission` (
 
 INSERT INTO `role_permission` (`role_id`, `permission_id`) VALUES
 (1, 1),
+(2, 1),
+(3, 1),
 (1, 2),
 (2, 2),
+(3, 2),
+(4, 2),
 (1, 3),
-(3, 3);
+(2, 3),
+(1, 4),
+(2, 4),
+(1, 5),
+(2, 5),
+(1, 6),
+(2, 6),
+(3, 6),
+(1, 7),
+(1, 8),
+(1, 9);
 
 -- --------------------------------------------------------
 
@@ -234,6 +262,13 @@ CREATE TABLE `surat_masuk` (
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+--
+-- Dumping data for table `surat_masuk`
+--
+
+INSERT INTO `surat_masuk` (`id`, `no_surat`, `pengirim`, `perihal`, `tanggal`, `file_surat`, `user_id`, `created_at`, `updated_at`) VALUES
+(1, '010010', 'soni', 'tes', '2025-01-01', NULL, 5, '2025-09-11 03:00:59', '2025-09-11 03:00:59');
+
 -- --------------------------------------------------------
 
 --
@@ -271,10 +306,13 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `name`, `email`, `password`, `created_at`, `updated_at`, `role_id`) VALUES
-(2, 'Staff TU', 'staff@example.com', '$2y$12$dIzFQZcXgDBi.yhbTVy5heiJbBbUNJzqWTTMolgV5zKRO2umlsef2', '2025-09-09 01:34:49', '2025-09-09 01:34:49', NULL),
+(2, 'Staff TU', 'staff@example.com', '$2y$12$dIzFQZcXgDBi.yhbTVy5heiJbBbUNJzqWTTMolgV5zKRO2umlsef2', '2025-09-09 01:34:49', '2025-09-10 02:47:14', 1),
 (5, 'Super Admin', 'superadmin@gmail.com', '$2y$12$Edpc8issE0ZFuwqgGAicPOedRymI.vy95pNTPUBkE6Cs3QcxY6LhK', '2025-09-09 10:19:48', '2025-09-09 04:45:33', 1),
-(6, 'soni', 'soni@gmail.com', '$2y$12$ys7gqrYFEeaDTOnPjlrB1.HJ3M1FtpfpeoDxYoBJX/m2L5xgzmahK', '2025-09-09 04:59:44', '2025-09-09 04:59:44', NULL),
-(7, 'Superadmin', 'spdmin@gmail.com', '$2y$12$gTccYnSbGHKK3HWr4w1Xauv9w5hNfJaOHAq2BLwYUHfBXy9Gx7xOa', '2025-09-09 21:19:59', '2025-09-09 21:19:59', 1);
+(7, 'Superadmin', 'spdmin@gmail.com', '$2y$12$gTccYnSbGHKK3HWr4w1Xauv9w5hNfJaOHAq2BLwYUHfBXy9Gx7xOa', '2025-09-09 21:19:59', '2025-09-09 21:19:59', 1),
+(10, 'soni', 'soni7@gmail.com', '$2y$12$xFsklOnekP9LYdWWDgVcL.EisVHDxj7Uw2yw1wEBTbdWdMjjhM.OK', '2025-09-10 01:41:26', '2025-09-10 01:41:26', 4),
+(11, 'Mahasiswa', 'mhs@gmail.com', '$2y$12$VFW2SViAdcMn.ULLifVes.5ixiV0AlaRJbgpuDnl0nXURd83JVc/S', '2025-09-10 20:30:26', '2025-09-10 20:30:26', 4),
+(12, 'dosen', 'dosen@gmail.com', '$2y$12$tGuOmfRdmqrDAoPnObSg/u55tPTSe6CYkJUTBvHWdi/ZpL.KgkbKW', '2025-09-10 21:12:09', '2025-09-10 21:12:24', 3),
+(13, 'sad', 'tes@gmail.com', '$2y$12$YW58RFfUD006FunoOyxDzuN.bet6Z3yFJ7001ZfNXhsZtlJAe6HGe', '2025-09-11 03:15:12', '2025-09-11 03:15:12', 1);
 
 --
 -- Indexes for dumped tables
@@ -408,7 +446,7 @@ ALTER TABLE `migrations`
 -- AUTO_INCREMENT for table `permissions`
 --
 ALTER TABLE `permissions`
-  MODIFY `id` bigint NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` bigint NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `roles`
@@ -426,7 +464,7 @@ ALTER TABLE `surat_keluar`
 -- AUTO_INCREMENT for table `surat_masuk`
 --
 ALTER TABLE `surat_masuk`
-  MODIFY `id` bigint NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `template_surat`
@@ -438,7 +476,7 @@ ALTER TABLE `template_surat`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` bigint NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` bigint NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- Constraints for dumped tables
