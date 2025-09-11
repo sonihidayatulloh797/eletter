@@ -1,11 +1,13 @@
 <?php
 
-namespace App\Livewire;
+namespace App\Livewire\RoleManagement;
 
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\Role;
-use Illuminate\Support\Facades\Auth;
+use App\Models\Permission;
 
 class RoleManagement extends Component
 {
@@ -27,6 +29,15 @@ class RoleManagement extends Component
     public $perPage = 10;
     public $sortField = 'name';
     public $sortDirection = 'asc';
+
+    // Modal Permission
+    public $showPermissionModal = false;
+    public $isFullscreenPermission = false;
+    public $isMinimizedPermission = false;
+    public $roleIdPermission;
+    public $roleName;
+    public $allPermissions = [];
+    public $selectedPermissions = [];
 
     protected $rules = [
         'name' => 'required|min:3|unique:roles,name',
@@ -54,7 +65,7 @@ class RoleManagement extends Component
         $roles = $query->orderBy($sortField, $this->sortDirection)
                        ->paginate($this->perPage);
 
-        return view('livewire.role-management', ['roles' => $roles]);
+        return view('livewire.role-management.role-management', ['roles' => $roles]);
     }
 
     public function sortBy($field)
@@ -152,6 +163,53 @@ class RoleManagement extends Component
         session()->flash('success', 'Role berhasil dihapus!');
         $this->resetPage();
     }
+
+    /**
+     * PERMISSION
+    */
+    public function openPermissionModal($roleId)
+    {
+        $role = Role::findOrFail($roleId);
+        $this->roleIdPermission = $role->id;
+        $this->roleName = $role->name;
+        $this->allPermissions = Permission::all(); // ambil semua permissions
+        $this->selectedPermissions = $role->permissions->pluck('id')->toArray(); // permission role saat ini
+        $this->showPermissionModal = true;
+    }
+
+    public function closePermissionModal()
+    {
+        $this->showPermissionModal = false;
+    }
+
+    public function minimizePermissionModal() { $this->isMinimizedPermission = true; }
+    public function restorePermissionModal() { $this->isMinimizedPermission = false; }
+    public function toggleFullscreenPermission() { $this->isFullscreenPermission = !$this->isFullscreenPermission; }
+
+    public function savePermissions()
+    {
+        $role = Role::findOrFail($this->roleIdPermission);
+
+        // Hapus permission lama
+        DB::table('role_permission')->where('role_id', $role->id)->delete();
+
+        // Masukkan permission baru
+        $insertData = [];
+        foreach ($this->selectedPermissions as $pid) {
+            $insertData[] = [
+                'role_id' => $role->id,
+                'permission_id' => $pid,
+            ];
+        }
+
+        if(!empty($insertData)){
+            DB::table('role_permission')->insert($insertData);
+        }
+
+        session()->flash('success', 'Permissions berhasil diperbarui!');
+        $this->closePermissionModal();
+    }
+
 
     /**
      * Helper: Cek permission user

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <title>Overflow X Table</title>
+</head>
+<body class="bg-gray-100 p-6">
+
+  <div class="bg-white rounded-2xl shadow-lg border border-gray-200 p-4">
+    <h2 class="text-lg font-bold mb-4 text-gray-800">📊 Data Mahasiswa</h2>
+
+    <!-- Scroll horizontal -->
+    <div class="overflow-x-auto">
+      <table class="min-w-[1200px] table-auto border-collapse text-sm">
+        <thead class="bg-gray-50 text-gray-600 border-b">
+          <tr>
+            <th class="px-4 py-2 text-left">No</th>
+            <th class="px-4 py-2 text-left">Nama</th>
+            <th class="px-4 py-2 text-left">NIM</th>
+            <th class="px-4 py-2 text-left">Program Studi</th>
+            <th class="px-4 py-2 text-left">Angkatan</th>
+            <th class="px-4 py-2 text-left">IPK</th>
+            <th class="px-4 py-2 text-left">Status</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y text-gray-700">
+          <tr>
+            <td class="px-4 py-2">1</td>
+            <td class="px-4 py-2">Ahmad Fauzi</td>
+            <td class="px-4 py-2">2101001</td>
+            <td class="px-4 py-2">Teknik Informatika</td>
+            <td class="px-4 py-2">2021</td>
+            <td class="px-4 py-2">3.75</td>
+            <td class="px-4 py-2">
+              <span class="px-2 py-1 text-xs rounded bg-green-100 text-green-700">Aktif</span>
+            </td>
+          </tr>
+          <tr>
+            <td class="px-4 py-2">2</td>
+            <td class="px-4 py-2">Siti Rahma</td>
+            <td class="px-4 py-2">2101002</td>
+            <td class="px-4 py-2">Sistem Informasi</td>
+            <td class="px-4 py-2">2021</td>
+            <td class="px-4 py-2">3.60</td>
+            <td class="px-4 py-2">
+              <span class="px-2 py-1 text-xs rounded bg-yellow-100 text-yellow-700">Cuti</span>
+            </td>
+          </tr>
+          <tr>
+            <td class="px-4 py-2">3</td>
+            <td class="px-4 py-2">Budi Santoso</td>
+            <td class="px-4 py-2">2101003</td>
+            <td class="px-4 py-2">Manajemen</td>
+            <td class="px-4 py-2">2021</td>
+            <td class="px-4 py-2">3.40</td>
+            <td class="px-4 py-2">
+              <span class="px-2 py-1 text-xs rounded bg-red-100 text-red-700">Nonaktif</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</body>
+</html>

@@ -1,11 +1,11 @@
 <div class="p-4 sm:p-6 bg-gray-100 min-h-screen">
+
     <h2 class="text-lg sm:text-xl font-bold mb-6 text-gray-800">👥 Manajemen User</h2>
 
     @if (session()->has('success'))
-    <div
-        class="bg-green-50 text-green-700 px-4 py-2 rounded-2xl mb-4 shadow-sm border border-green-200 text-sm sm:text-base">
-        ✅ {{ session('success') }}
-    </div>
+        <div class="bg-green-50 text-green-700 px-4 py-2 rounded-2xl mb-4 shadow-sm border border-green-200 text-sm sm:text-base">
+            ✅ {{ session('success') }}
+        </div>
     @endif
 
     <!-- Tombol Tambah -->
@@ -14,24 +14,21 @@
         + Tambah User
     </button>
 
-    <!-- Card Table User -->
+    <!-- Filter & Search -->
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-3">
-    <!-- Search -->
-    <input type="text" wire:model.live="search"
-           placeholder="🔍 Cari user..."
-           class="w-full sm:w-64 border rounded-xl p-2 text-sm focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition">
+        <input type="text" wire:model.live="search"
+               placeholder="🔍 Cari user..."
+               class="w-full sm:w-64 border rounded-xl p-2 text-sm focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition">
 
-    <!-- Filter Role -->
-    <select wire:model.live="filterRole"
-            class="border rounded-xl p-2 text-sm focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition">
-        <option value="">-- Semua Role --</option>
-        @foreach ($roles as $r)
-            <option value="{{ $r->id }}">{{ $r->name }}</option>
-        @endforeach
-    </select>
+        <select wire:model.live="filterRole"
+                class="border rounded-xl p-2 text-sm focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition">
+            <option value="">-- Semua Role --</option>
+            @foreach ($roles as $r)
+                <option value="{{ $r->id }}">{{ $r->name }}</option>
+            @endforeach
+        </select>
 
-    <!-- Per page -->
-    <select wire:model.live="perPage"
+        <select wire:model.live="perPage"
                 class="border rounded-xl p-2 text-sm focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition">
             <option value="10">10 / halaman</option>
             <option value="25">25 / halaman</option>
@@ -41,8 +38,8 @@
     </div>
 
     <!-- Table -->
-    <div class="overflow-x-auto bg-white/80 backdrop-blur-md rounded-2xl shadow-lg border border-gray-200">
-        <table class="w-full text-xs sm:text-sm">
+    <div class="w-full p-3 overflow-x-auto bg-white rounded-2xl shadow-lg border border-gray-200">
+        <table class="min-w-[1200px] text-xs sm:text-sm border-collapse">
             <thead class="text-gray-600 border-b bg-gray-50/70">
                 <tr>
                     <th class="p-3 text-left">No</th>
@@ -59,9 +56,7 @@
             <tbody class="text-gray-700">
                 @forelse ($users as $index => $user)
                     <tr class="border-b hover:bg-gray-50/70 transition">
-                        <td class="p-3">
-                            {{ $users->firstItem() + $index }}
-                        </td>
+                        <td class="p-3">{{ $users->firstItem() + $index }}</td>
                         <td class="p-3 font-medium">{{ $user->name }}</td>
                         <td class="p-3 hidden sm:table-cell">{{ $user->email }}</td>
                         <td class="p-3">
@@ -71,7 +66,7 @@
                                 {{ $user->role?->name ?? '-' }}
                             </span>
                         </td>
-                        <td class="p-3 flex gap-2">
+                        <td class="p-3 flex gap-2 flex-wrap">
                             <button wire:click="openModal(true, {{ $user->id }})"
                                 class="px-3 py-1 rounded-xl text-xs bg-yellow-400 text-white shadow hover:bg-yellow-500">
                                 ✏️ Edit
@@ -92,29 +87,23 @@
                 @endforelse
             </tbody>
         </table>
-
     </div>
 
     <div class="mt-4">
         {{ $users->links() }}
     </div>
 
-
     <!-- Modal -->
     @if ($showModal)
         <div class="fixed inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm z-50 px-4">
-            {{-- MINIMIZED BAR --}}
             @if($isMinimized)
                 <div class="fixed bottom-6 left-6 z-50">
-                    <div
-                        class="flex items-center gap-3 bg-white/90 backdrop-blur-md rounded-full px-3 py-2 shadow-lg border border-gray-200 cursor-pointer"
-                        wire:click="restore"
-                        role="button"
-                        aria-label="Restore window">
+                    <div class="flex items-center gap-3 bg-white/90 backdrop-blur-md rounded-full px-3 py-2 shadow-lg border border-gray-200 cursor-pointer"
+                         wire:click="restore">
                         <div class="flex items-center gap-2">
-                            <button wire:click.stop="closeModal" class="w-3 h-3 rounded-full bg-red-500 hover:bg-red-600" aria-label="Close"></button>
-                            <button wire:click.stop="restore" class="w-3 h-3 rounded-full bg-yellow-400 hover:bg-yellow-500" aria-label="Restore"></button>
-                            <button wire:click.stop="toggleFullscreen" class="w-3 h-3 rounded-full bg-green-500 hover:bg-green-600" aria-label="Toggle fullscreen"></button>
+                            <button wire:click.stop="closeModal" class="w-3 h-3 rounded-full bg-red-500 hover:bg-red-600"></button>
+                            <button wire:click.stop="restore" class="w-3 h-3 rounded-full bg-yellow-400 hover:bg-yellow-500"></button>
+                            <button wire:click.stop="toggleFullscreen" class="w-3 h-3 rounded-full bg-green-500 hover:bg-green-600"></button>
                         </div>
                         <span class="ml-3 text-sm font-medium text-gray-800">
                             {{ $isEdit ? '✏️ Edit User' : '➕ Tambah User' }}
@@ -122,28 +111,22 @@
                     </div>
                 </div>
             @else
-                {{-- NORMAL / FULLSCREEN MODAL --}}
-                <div
-                    class="@if($isFullscreen) w-full max-w-none h-[90vh] max-h-[90vh] rounded-xl @else w-full max-w-lg rounded-3xl @endif
-                        bg-white/95 backdrop-blur-xl shadow-2xl border border-gray-200 overflow-hidden transition-all duration-200">
-                    <!-- Header ala macOS -->
+                <div class="@if($isFullscreen) w-full max-w-none h-[90vh] max-h-[90vh] rounded-xl @else w-full max-w-lg rounded-3xl @endif
+                            bg-white/95 backdrop-blur-xl shadow-2xl border border-gray-200 overflow-hidden transition-all duration-200">
                     <div class="flex items-center justify-between px-3 py-2 bg-gray-50 border-b">
                         <div class="flex items-center space-x-2">
-                            <button wire:click="closeModal" class="w-3 h-3 rounded-full bg-red-500 hover:bg-red-600" aria-label="Close"></button>
-                            <button wire:click="minimize" class="w-3 h-3 rounded-full bg-yellow-400 hover:bg-yellow-500" aria-label="Minimize"></button>
-                            <button wire:click="toggleFullscreen" class="w-3 h-3 rounded-full bg-green-500 hover:bg-green-600" aria-label="Toggle fullscreen"></button>
+                            <button wire:click="closeModal" class="w-3 h-3 rounded-full bg-red-500 hover:bg-red-600"></button>
+                            <button wire:click="minimize" class="w-3 h-3 rounded-full bg-yellow-400 hover:bg-yellow-500"></button>
+                            <button wire:click="toggleFullscreen" class="w-3 h-3 rounded-full bg-green-500 hover:bg-green-600"></button>
                         </div>
-
                         <h3 class="text-sm sm:text-base font-semibold text-gray-700">
                             {{ $isEdit ? '✏️ Edit User' : '➕ Tambah User' }}
                         </h3>
-
-                        <div class="w-6"></div> {{-- spacer supaya judul center --}}
+                        <div class="w-6"></div>
                     </div>
 
-                    <!-- Body -->
                     <div class="p-4 sm:p-6 overflow-auto h-full">
-                            <form wire:submit.prevent="{{ $isEdit ? 'update' : 'store' }}" class="space-y-4">
+                        <form wire:submit.prevent="{{ $isEdit ? 'update' : 'store' }}" class="space-y-4">
                             <div>
                                 <label class="block mb-1 text-sm font-medium text-gray-600">Nama</label>
                                 <input type="text" wire:model="name"
@@ -178,7 +161,7 @@
                                 @error('role') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                             </div>
 
-                            <div class="flex justify-end gap-3 pt-3">
+                            <div class="flex flex-wrap justify-end gap-3 pt-3">
                                 <button type="button" wire:click="closeModal"
                                     class="px-4 py-2 rounded-xl bg-gray-200 hover:bg-gray-300 text-gray-700 text-sm shadow-sm transition">
                                     Batal
@@ -195,5 +178,5 @@
         </div>
     @endif
 
-
 </div>
+

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Livewire;
+namespace App\Livewire\UserManagement;
 
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -64,7 +64,7 @@ class UserManagement extends Component
         $users = $query->orderBy($sortField, $this->sortDirection)
                        ->paginate($this->perPage);
 
-        return view('livewire.user-management', [
+        return view('livewire.user-management.user-management', [
             'users' => $users,
             'roles' => Role::all()
         ]);

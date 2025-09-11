@@ -13,11 +13,17 @@ class SuratMasuk extends Model
         'perihal',
         'tanggal',
         'file_surat',
-        'status'
+        'user_id',
     ];
 
     public function disposisi()
     {
         return $this->hasMany(Disposisi::class, 'surat_masuk_id');
     }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
 }

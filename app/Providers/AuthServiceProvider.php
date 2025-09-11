@@ -3,10 +3,9 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider; // harus ini
 use Illuminate\Support\Facades\Gate;
-use App\Models\Permission;
-
+use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\Auth;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -23,11 +22,31 @@ class AuthServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        $this->registerPolicies();
+         // Super Admin otomatis bisa semua
+        Gate::before(function ($user, $ability) {
+            if ($user->hasRole('admin')) {
+                return true;
+            }
+        });
 
-        // Mendefinisikan gate untuk semua permission di database
-        foreach (Permission::all() as $permission) {
-            Gate::define($permission->name, fn($user) => $user->can($permission->name));
+        // Daftarkan permission lain
+        $permissions = \App\Models\Permission::all();
+        foreach ($permissions as $permission) {
+            Gate::define($permission->name, function ($user) use ($permission) {
+                return $user->hasPermission($permission->name);
+            });
         }
+
+        Blade::if('can', function ($permission) {
+            $user = Auth::user();
+            if (!$user) return false;
+
+            // Jika Super Admin / admin, otomatis boleh semua
+            if ($user->role && $user->role->name === 'admin') {
+                return true;
+            }
+
+            return $user->hasPermission($permission);
+        });
     }
 }

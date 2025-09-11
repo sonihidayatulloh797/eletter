@@ -25,6 +25,11 @@ class Role extends Model
         return $this->belongsToMany(Permission::class, 'role_permission', 'role_id', 'permission_id');
     }
 
+    public function syncPermissions(array $permissionIds)
+    {
+        $this->permissions()->sync($permissionIds);
+    }
+
     public function can($permissionName, $arguments = [])
     {
         // Jika Super Admin / admin, otomatis boleh akses semua

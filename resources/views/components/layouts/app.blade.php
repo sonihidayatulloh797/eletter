@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html lang="en" class="overflow-x-hidden">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+
   <title>E-Letter Dashboard</title>
 
   {{-- Tailwind via CDN --}}
@@ -13,8 +14,8 @@
 
   @livewireStyles
 </head>
-<body class="bg-gray-100 font-sans overflow-x-hidden">
-  <div class="min-h-screen flex">
+<body class="bg-gray-100 font-sans">
+  <!-- <div class="min-h-screen flex"> -->
 
     {{-- Sidebar --}}
     @include('layouts.sidebar')
@@ -42,7 +43,7 @@
       {{-- Slot konten (isi dari child view) --}}
       {{ $slot }}
     </div>
-  </div>
+  <!-- </div> -->
 
   @livewireScripts
   @stack('scripts')
