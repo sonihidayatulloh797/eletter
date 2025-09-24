@@ -34,16 +34,67 @@
           </button>
           <h1 class="text-xl font-bold">E-Letter UNLA</h1>
         </div>
-        <div class="flex items-center gap-4">
-          <button class="p-2 bg-gray-200 rounded-full">🔔</button>
-          <img src="https://i.pravatar.cc/40" class="w-10 h-10 rounded-full"/>
+
+        <div class="flex items-center gap-4" x-data="{ notifOpen: false, userOpen: false }">
+          
+          {{-- Notifikasi --}}
+          <div class="relative">
+            <button @click="notifOpen = !notifOpen" class="p-2 bg-gray-200 rounded-full relative focus:ring">
+              🔔
+              <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs px-1.5 py-0.5 rounded-full">3</span>
+            </button>
+
+            {{-- Dropdown Notifikasi --}}
+            <div x-show="notifOpen" @click.outside="notifOpen = false"
+                class="absolute right-0 mt-2 w-64 bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden z-50">
+              <div class="p-3 border-b text-sm font-semibold text-gray-700">Notifikasi</div>
+              <ul class="max-h-60 overflow-y-auto text-sm">
+                <li class="px-4 py-2 hover:bg-gray-50">📄 Surat masuk baru dari Rektor</li>
+                <li class="px-4 py-2 hover:bg-gray-50">✅ Disposisi berhasil ditambahkan</li>
+                <li class="px-4 py-2 hover:bg-gray-50">⚠️ File surat perlu diperiksa</li>
+              </ul>
+              <div class="p-2 text-center border-t text-xs text-blue-600 hover:bg-gray-50 cursor-pointer">
+                Lihat semua
+              </div>
+            </div>
+          </div>
+
+          {{-- User Profile --}}
+          <div class="relative">
+            <button @click="userOpen = !userOpen" class="p-2 bg-gray-200 rounded-full focus:ring">
+              {{-- SVG User --}}
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-gray-600" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5Zm0 2c-3.3 0-10 1.7-10 5v3h20v-3c0-3.3-6.7-5-10-5Z"/>
+              </svg>
+            </button>
+
+            {{-- Dropdown User --}}
+            <div x-show="userOpen" @click.outside="userOpen = false"
+                class="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
+              <div class="p-3 border-b text-sm font-semibold text-gray-700">Halo, Admin</div>
+              <ul class="text-sm">
+                <li>
+                  <a href="#" class="block px-4 py-2 hover:bg-gray-50">⚙️ Pengaturan</a>
+                </li>
+                <li>
+                  <a href="#" class="block px-4 py-2 hover:bg-gray-50">📂 Arsip Saya</a>
+                </li>
+                <li>
+                  <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit" class="w-full text-left px-4 py-2 hover:bg-gray-50">🚪 Logout</button>
+                  </form>
+                </li>
+              </ul>
+            </div>
+          </div>
+
         </div>
       </div>
 
       {{-- Slot konten (isi dari child view) --}}
       {{ $slot }}
     </div>
-  <!-- </div> -->
 
   @livewireScripts
   @stack('scripts')

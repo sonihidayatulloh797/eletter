@@ -116,7 +116,10 @@
   </div>
 
   <div class="flex items-center gap-3 mt-6">
-    <img src="https://i.pravatar.cc/40" alt="user" class="w-10 h-10 rounded-full"/>
+    {{-- SVG User --}}
+    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-gray-600" fill="currentColor" viewBox="0 0 24 24">
+      <path d="M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5Zm0 2c-3.3 0-10 1.7-10 5v3h20v-3c0-3.3-6.7-5-10-5Z"/>
+    </svg>
     <div>
       <p class="font-semibold">{{ auth()->user()->name }}</p>
       <form action="{{ route('logout') }}" method="POST">

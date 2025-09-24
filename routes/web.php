@@ -9,7 +9,7 @@ use App\Livewire\UserManagement\UserManagement;
 use App\Livewire\RoleManagement\RoleManagement;
 use App\Livewire\SuratMasuk\SuratMasukManagement;
 
-Route::get('/login', Login::class)->name('login');
+Route::get('/', Login::class)->name('login');
 Route::post('/logout', function () {
     Auth::logout();
     request()->session()->invalidate();
