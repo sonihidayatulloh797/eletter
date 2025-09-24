@@ -23,7 +23,26 @@ class SuratMasuk extends Model
 
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id');
     }
 
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function updater()
+    {
+        return $this->belongsTo(User::class, 'updated_by');
+    }
+
+    public function creatorRole()
+    {
+        return $this->belongsTo(Role::class, 'created_role_id');
+    }
+
+    public function updaterRole()
+    {
+        return $this->belongsTo(Role::class, 'updated_role_id');
+    }
 }

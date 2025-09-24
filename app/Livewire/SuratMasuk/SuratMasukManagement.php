@@ -11,6 +11,13 @@ class SuratMasukManagement extends Component
 {
     use WithPagination, WithFileUploads;
 
+    public $isEdit = false;
+    public $showModal = false;
+
+    // Modal states (macOS style)
+    public $isMinimized = false;
+    public $isFullscreen = false;
+
     public $search = '';
     public $sortField = 'tanggal';
     public $sortDirection = 'desc';
@@ -35,14 +42,15 @@ class SuratMasukManagement extends Component
 
     public function render()
     {
-        $surats = SuratMasuk::where('no_surat', 'like', "%{$this->search}%")
+        $surats = SuratMasuk::with(['creator', 'updater', 'creatorRole', 'updaterRole'])
+            ->where('no_surat', 'like', "%{$this->search}%")
             ->orWhere('pengirim', 'like', "%{$this->search}%")
             ->orWhere('perihal', 'like', "%{$this->search}%")
             ->orderBy($this->sortField, $this->sortDirection)
             ->paginate(10);
-
+    
         return view('livewire.surat-masuk.surat-masuk-management', ['surats' => $surats]);
-    }
+    }    
 
     public function sortBy($field)
     {
@@ -88,7 +96,7 @@ class SuratMasukManagement extends Component
     public function save()
     {
         $this->validate();
-
+    
         $data = [
             'no_surat' => $this->no_surat,
             'pengirim' => $this->pengirim,
@@ -96,18 +104,28 @@ class SuratMasukManagement extends Component
             'tanggal' => $this->tanggal,
             'user_id' => auth()->id(),
         ];
-
+    
         if ($this->file_surat) {
             $data['file_surat'] = $this->file_surat->store('surat_masuk_files', 'public');
         }
-
+    
+        if ($this->suratId) {
+            // UPDATE
+            $data['updated_by'] = auth()->id();
+            $data['updated_role_id'] = auth()->user()->role_id ?? null;
+        } else {
+            // CREATE
+            $data['created_by'] = auth()->id();
+            $data['created_role_id'] = auth()->user()->role_id ?? null;
+        }
+    
         SuratMasuk::updateOrCreate(['id' => $this->suratId], $data);
-
+    
         session()->flash('message', $this->suratId ? 'Surat berhasil diperbarui.' : 'Surat berhasil ditambahkan.');
-
+    
         $this->closeModal();
         $this->resetForm();
-    }
+    }    
 
     public function delete($id)
     {
