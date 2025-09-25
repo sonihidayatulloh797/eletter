@@ -24,7 +24,7 @@
 
       @if(auth()->user()->hasPermission('manage_letters_out'))
         <li>
-          <a href="/surat-keluar" class="flex items-center gap-3 text-gray-700 hover:text-blue-500">
+          <a href="/manajemen-suratkeluar" class="flex items-center gap-3 text-gray-700 hover:text-blue-500">
             📤 <span>Surat Keluar</span>
           </a>
         </li>

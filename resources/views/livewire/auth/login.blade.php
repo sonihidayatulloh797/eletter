@@ -43,7 +43,7 @@
 
             <!-- Submit -->
             <button type="submit"
-                    class="w-full bg-blue-600 text-white py-2.5 rounded-lg font-semibold text-sm hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all duration-150">
+                    class="w-full bg-gradient-to-r from-blue-400 to-blue-500 text-white py-2.5 rounded-lg font-semibold text-sm hover:from-blue-500 hover:to-blue-600 transition-all duration-200">
                 Login
             </button>
         </form>

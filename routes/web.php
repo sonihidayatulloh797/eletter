@@ -8,6 +8,7 @@ use App\Livewire\Auth\Login;
 use App\Livewire\UserManagement\UserManagement;
 use App\Livewire\RoleManagement\RoleManagement;
 use App\Livewire\SuratMasuk\SuratMasukManagement;
+use App\Livewire\SuratKeluar\SuratKeluarManagement;
 
 Route::get('/', Login::class)->name('login');
 Route::post('/logout', function () {
@@ -22,5 +23,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/manajemen-user', UserManagement::class)->name('manajemen-user');
     Route::get('/manajemen-role', RoleManagement::class)->name('manajemen-role');
     Route::get('/manajemen-suratmasuk', SuratMasukManagement::class)->name('manajemen-suratmasuk');
+    Route::get('/manajemen-suratkeluar', SuratKeluarManagement::class)->name('manajemen-suratkeluar');
 });
 

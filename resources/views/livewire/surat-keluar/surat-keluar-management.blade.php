@@ -1,6 +1,6 @@
 <div class="p-4 sm:p-6 bg-gray-100 min-h-screen">
 
-    <h2 class="text-lg sm:text-xl font-bold mb-6 text-gray-800">📩 Manajemen Surat Masuk</h2>
+    <h2 class="text-lg sm:text-xl font-bold mb-6 text-gray-800">📤 Manajemen Surat Keluar</h2>
 
     @if (session()->has('message'))
         <div class="bg-green-50 text-green-700 px-4 py-2 rounded-2xl mb-4 shadow-sm border border-green-200 text-sm sm:text-base">
@@ -38,8 +38,8 @@
                     <th class="p-3 text-left cursor-pointer" wire:click="sortBy('no_surat')">
                         No Surat {!! $sortField === 'no_surat' ? ($sortDirection === 'asc' ? '⬆️' : '⬇️') : '' !!}
                     </th>
-                    <th class="p-3 text-left cursor-pointer" wire:click="sortBy('pengirim')">
-                        Pengirim {!! $sortField === 'pengirim' ? ($sortDirection === 'asc' ? '⬆️' : '⬇️') : '' !!}
+                    <th class="p-3 text-left cursor-pointer" wire:click="sortBy('tujuan')">
+                        Tujuan {!! $sortField === 'tujuan' ? ($sortDirection === 'asc' ? '⬆️' : '⬇️') : '' !!}
                     </th>
                     <th class="p-3 text-left cursor-pointer" wire:click="sortBy('perihal')">
                         Perihal {!! $sortField === 'perihal' ? ($sortDirection === 'asc' ? '⬆️' : '⬇️') : '' !!}
@@ -58,7 +58,7 @@
                     <tr class="border-b hover:bg-gray-50/70 transition">
                         <td class="p-3">{{ $surats->firstItem() + $index }}</td>
                         <td class="p-3 font-medium">{{ $surat->no_surat }}</td>
-                        <td class="p-3">{{ $surat->pengirim }}</td>
+                        <td class="p-3">{{ $surat->tujuan }}</td>
                         <td class="p-3">{{ $surat->perihal }}</td>
                         <td class="p-3 whitespace-nowrap">{{ $surat->tanggal }}</td>
 
@@ -107,19 +107,18 @@
         </table>
     </div>
 
-
     <div class="mt-4">
         {{ $surats->links() }}
     </div>
 
+    {{-- Modal persis sama --}}
     @if ($isModalOpen)
         <div class="fixed inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm z-50 px-4">
-            {{-- MINIMIZED BAR --}}
             @if($isMinimized)
+                {{-- minimized bar --}}
                 <div class="fixed bottom-6 left-6 z-50">
-                    <div
-                        class="flex items-center gap-3 bg-white/90 backdrop-blur-md rounded-full px-3 py-2 shadow-lg border border-gray-200 cursor-pointer"
-                        wire:click="restore">
+                    <div class="flex items-center gap-3 bg-white/90 backdrop-blur-md rounded-full px-3 py-2 shadow-lg border border-gray-200 cursor-pointer"
+                         wire:click="restore">
                         <div class="flex items-center gap-2">
                             <button wire:click.stop="closeModal" class="w-3 h-3 rounded-full bg-red-500 hover:bg-red-600"></button>
                             <button wire:click.stop="restore" class="w-3 h-3 rounded-full bg-yellow-400 hover:bg-yellow-500"></button>
@@ -131,7 +130,7 @@
                     </div>
                 </div>
             @else
-                {{-- NORMAL / FULLSCREEN MODAL --}}
+                {{-- normal / fullscreen modal --}}
                 <div
                     class="@if($isFullscreen) w-full max-w-none h-[90vh] max-h-[90vh] rounded-xl @else w-full max-w-lg rounded-3xl @endif
                         bg-white/95 backdrop-blur-xl shadow-2xl border border-gray-200 overflow-hidden transition-all duration-200">
@@ -160,10 +159,10 @@
                             </div>
 
                             <div>
-                                <label class="block mb-1 text-sm font-medium text-gray-600">Pengirim</label>
-                                <input type="text" wire:model="pengirim"
+                                <label class="block mb-1 text-sm font-medium text-gray-600">Tujuan</label>
+                                <input type="text" wire:model="tujuan"
                                     class="w-full border border-gray-300 rounded-xl p-2 text-sm focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition">
-                                @error('pengirim') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                                @error('tujuan') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                             </div>
 
                             <div>
@@ -180,6 +179,7 @@
                                 @error('tanggal') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                             </div>
 
+                            {{-- Dropzone persis sama --}}
                             <div x-data="{
                                 isDropping: false,
                                 preview: null,
@@ -194,57 +194,44 @@
                                     this.$refs.fileInput.files = event.dataTransfer.files;
                                     this.$refs.fileInput.dispatchEvent(new Event('change'));
                                 }
-                                }" 
-                                class="w-full"
+                                }" class="w-full"
                             >
-                            <label class="block mb-1 text-sm font-medium text-gray-600">File Surat</label>
-                            <!-- Drop area -->
-                            <div
-                                class="relative flex flex-col items-center justify-center w-full border-2 border-dashed rounded-xl cursor-pointer
+                                <label class="block mb-1 text-sm font-medium text-gray-600">File Surat</label>
+                                <div class="relative flex flex-col items-center justify-center w-full border-2 border-dashed rounded-xl cursor-pointer
                                        transition p-6"
-                                :class="isDropping ? 'border-blue-400 bg-blue-50' : 'border-gray-300 hover:border-blue-400 hover:bg-blue-50'"
-                                @dragover.prevent="isDropping = true"
-                                @dragleave.prevent="isDropping = false"
-                                @drop.prevent="isDropping = false; dropFile($event)"
-                                @click="$refs.fileInput.click()"
-                            >
-                                <!-- Default content -->
-                                <template x-if="!preview">
-                                    <div class="text-center space-y-2">
-                                        <svg class="w-10 h-10 mx-auto text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M7 16V4a2 2 0 012-2h6a2 2 0 012 2v12m-4 4h-4m0 0v-4h4v4z" />
-                                        </svg>
-                                        <p class="text-sm text-gray-500">Tarik & lepaskan file di sini</p>
-                                        <p class="text-xs text-gray-400">atau klik untuk pilih file</p>
-                                    </div>
-                                </template>
-                        
-                                <!-- Preview -->
-                                <template x-if="preview">
-                                    <div class="relative w-full text-center">
-                                        <iframe x-bind:src="preview" class="w-full h-40 rounded-lg border"></iframe>
-                                        <button type="button" @click="preview = null; $refs.fileInput.value = ''"
-                                            class="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 shadow">
-                                            ✕
-                                        </button>
-                                    </div>
-                                </template>
-                        
-                                <!-- Hidden file input -->
-                                <input type="file" wire:model="file_surat" x-ref="fileInput" class="hidden"
-                                    @change="handleFiles($event)">
+                                     :class="isDropping ? 'border-blue-400 bg-blue-50' : 'border-gray-300 hover:border-blue-400 hover:bg-blue-50'"
+                                     @dragover.prevent="isDropping = true"
+                                     @dragleave.prevent="isDropping = false"
+                                     @drop.prevent="isDropping = false; dropFile($event)"
+                                     @click="$refs.fileInput.click()">
+
+                                    <template x-if="!preview">
+                                        <div class="text-center space-y-2">
+                                            <svg class="w-10 h-10 mx-auto text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                      d="M7 16V4a2 2 0 012-2h6a2 2 0 012 2v12m-4 4h-4m0 0v-4h4v4z" />
+                                            </svg>
+                                            <p class="text-sm text-gray-500">Tarik & lepaskan file di sini</p>
+                                            <p class="text-xs text-gray-400">atau klik untuk pilih file</p>
+                                        </div>
+                                    </template>
+
+                                    <template x-if="preview">
+                                        <div class="relative w-full text-center">
+                                            <iframe x-bind:src="preview" class="w-full h-40 rounded-lg border"></iframe>
+                                            <button type="button" @click="preview = null; $refs.fileInput.value = ''"
+                                                    class="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 shadow">✕</button>
+                                        </div>
+                                    </template>
+
+                                    <input type="file" wire:model="file_surat" x-ref="fileInput" class="hidden"
+                                           @change="handleFiles($event)">
+                                </div>
+                                @error('file_surat') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                                <div wire:loading wire:target="file_surat" class="mt-2 w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-blue-500 h-2 rounded-full animate-pulse w-2/3"></div>
+                                </div>
                             </div>
-                        
-                            @error('file_surat')
-                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                            @enderror
-                        
-                            <!-- Progress bar Livewire -->
-                            <div wire:loading wire:target="file_surat" class="mt-2 w-full bg-gray-200 rounded-full h-2">
-                                <div class="bg-blue-500 h-2 rounded-full animate-pulse w-2/3"></div>
-                            </div>
-                        </div>                                                    
 
                             <div class="flex justify-end gap-3 pt-3">
                                 <button type="button" wire:click="closeModal"
@@ -262,5 +249,4 @@
             @endif
         </div>
     @endif
-
 </div>

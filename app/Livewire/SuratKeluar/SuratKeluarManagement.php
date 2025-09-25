@@ -1,15 +1,15 @@
 <?php
 
-namespace App\Livewire\SuratMasuk;
+namespace App\Livewire\SuratKeluar;
 
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Livewire\WithFileUploads;
-use App\Models\SuratMasuk;
+use App\Models\SuratKeluar;
 
-class SuratMasukManagement extends Component
+class SuratKeluarManagement extends Component
 {
     use WithPagination, WithFileUploads;
 
@@ -25,35 +25,37 @@ class SuratMasukManagement extends Component
     public $sortField = 'tanggal';
     public $sortDirection = 'desc';
 
-    public $suratId, $no_surat, $pengirim, $perihal, $tanggal, $file_surat;
+    public $suratId, $no_surat, $tujuan, $perihal, $tanggal, $file_surat;
     public $isModalOpen = false;
 
     protected $rules = [
-        'no_surat' => 'required|string|max:100',
-        'pengirim' => 'required|string|max:150',
-        'perihal' => 'required|string|max:200',
-        'tanggal' => 'required|date',
+        'no_surat'   => 'required|string|max:100',
+        'tujuan'     => 'required|string|max:150',
+        'perihal'    => 'required|string|max:200',
+        'tanggal'    => 'required|date',
         'file_surat' => 'nullable|file|mimes:pdf,doc,docx|max:2048',
     ];
 
     public function mount()
     {
-        if (!auth()->user()->role->permissions->contains('name', 'manage_letters_in')) {
+        if (!auth()->user()->role->permissions->contains('name', 'manage_letters_out')) {
             abort(403, 'Anda tidak memiliki akses ke halaman ini');
         }
     }
 
     public function render()
     {
-        $surats = SuratMasuk::with(['creator', 'updater', 'creatorRole', 'updaterRole'])
+        $surats = SuratKeluar::with(['creator', 'updater', 'creatorRole', 'updaterRole'])
             ->where('no_surat', 'like', "%{$this->search}%")
-            ->orWhere('pengirim', 'like', "%{$this->search}%")
+            ->orWhere('tujuan', 'like', "%{$this->search}%")
             ->orWhere('perihal', 'like', "%{$this->search}%")
             ->orderBy($this->sortField, $this->sortDirection)
-            ->paginate(10);
-    
-        return view('livewire.surat-masuk.surat-masuk-management', ['surats' => $surats]);
-    }    
+            ->paginate($this->perPage);
+
+        return view('livewire.surat-keluar.surat-keluar-management', [
+            'surats' => $surats
+        ]);
+    }
 
     public function sortBy($field)
     {
@@ -70,10 +72,10 @@ class SuratMasukManagement extends Component
         $this->resetForm();
 
         if ($id) {
-            $surat = SuratMasuk::findOrFail($id);
+            $surat = SuratKeluar::findOrFail($id);
             $this->suratId = $surat->id;
             $this->no_surat = $surat->no_surat;
-            $this->pengirim = $surat->pengirim;
+            $this->tujuan = $surat->tujuan;
             $this->perihal = $surat->perihal;
             $this->tanggal = $surat->tanggal;
         }
@@ -90,7 +92,7 @@ class SuratMasukManagement extends Component
     {
         $this->suratId = null;
         $this->no_surat = '';
-        $this->pengirim = '';
+        $this->tujuan = '';
         $this->perihal = '';
         $this->tanggal = '';
         $this->file_surat = null;
@@ -99,32 +101,32 @@ class SuratMasukManagement extends Component
     public function save()
     {
         $this->validate();
-
+    
         $data = [
             'no_surat' => $this->no_surat,
-            'pengirim' => $this->pengirim,
-            'perihal' => $this->perihal,
-            'tanggal' => $this->tanggal,
-            'user_id' => auth()->id(),
+            'tujuan'   => $this->tujuan,
+            'perihal'  => $this->perihal,
+            'tanggal'  => $this->tanggal,
+            'user_id'  => auth()->id(),
         ];
-
+    
         if ($this->file_surat) {
-            // Hapus file lama jika update
+            // Jika update hapus file lama
             if ($this->suratId) {
-                $old = SuratMasuk::find($this->suratId);
+                $old = SuratKeluar::find($this->suratId);
                 if ($old && $old->file_surat && Storage::disk('public')->exists($old->file_surat)) {
                     Storage::disk('public')->delete($old->file_surat);
                 }
             }
-
-            // Buat nama file custom
+    
+            // Buat nama file custom berdasarkan field
             $extension = $this->file_surat->getClientOriginalExtension();
-            $namaFile = Str::slug($this->no_surat . '_' . $this->tanggal . '_' . $this->pengirim . '_' . $this->perihal, '_') . '.' . $extension;
-
-            // Simpan dengan nama custom
-            $data['file_surat'] = $this->file_surat->storeAs('surat_masuk_files', $namaFile, 'public');
+            $namaFile = Str::slug($this->no_surat . '_' . $this->tanggal . '_' . $this->tujuan . '_' . $this->perihal, '_') . '.' . $extension;
+    
+            // Simpan file dengan nama custom
+            $data['file_surat'] = $this->file_surat->storeAs('surat_keluar_files', $namaFile, 'public');
         }
-
+    
         if ($this->suratId) {
             // UPDATE
             $data['updated_by'] = auth()->id();
@@ -134,19 +136,19 @@ class SuratMasukManagement extends Component
             $data['created_by'] = auth()->id();
             $data['created_role_id'] = auth()->user()->role_id ?? null;
         }
-
-        SuratMasuk::updateOrCreate(['id' => $this->suratId], $data);
-
-        session()->flash('message', $this->suratId ? 'Surat berhasil diperbarui.' : 'Surat berhasil ditambahkan.');
-
+    
+        SuratKeluar::updateOrCreate(['id' => $this->suratId], $data);
+    
+        session()->flash('message', $this->suratId ? 'Surat keluar berhasil diperbarui.' : 'Surat keluar berhasil ditambahkan.');
+    
         $this->closeModal();
         $this->resetForm();
-    }  
+    }
 
     public function delete($id)
     {
-        SuratMasuk::findOrFail($id)->delete();
-        session()->flash('message', 'Surat berhasil dihapus.');
+        SuratKeluar::findOrFail($id)->delete();
+        session()->flash('message', 'Surat keluar berhasil dihapus.');
     }
 
     /**
