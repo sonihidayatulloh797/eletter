@@ -29,6 +29,14 @@ class SuratKeluar extends Model
     }
 
     /**
+     * Relasi ke template
+     */
+    public function template()
+    {
+        return $this->belongsTo(TemplateSurat::class, 'template_id');
+    }
+
+    /**
      * Relasi ke user pembuat
      */
     public function creator()
