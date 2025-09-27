@@ -94,6 +94,11 @@
                                 onclick="return confirm('Yakin hapus surat ini?')">
                                 🗑️ Hapus
                             </button>
+                            <!-- Tombol ke Disposisi -->
+                            <a href="{{ route('disposisi.index', $surat->id) }}"
+                                class="px-3 py-1 rounded-xl text-xs bg-blue-500 text-white shadow hover:bg-blue-600">
+                                📌 Disposisi
+                            </a>
                         </td>
                     </tr>
                 @empty
