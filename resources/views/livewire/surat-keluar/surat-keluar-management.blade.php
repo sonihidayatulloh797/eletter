@@ -233,6 +233,19 @@
                                 </div>
                             </div>
 
+                            <div>
+                                <label class="block mb-1 text-sm font-medium text-gray-600">Template</label>
+                                <select wire:model="template_id"
+                                        class="w-full border border-gray-300 rounded-xl p-2 text-sm focus:ring-2 focus:ring-blue-400">
+                                    <option value="">-- Tanpa Template --</option>
+                                    @foreach(\App\Models\TemplateSurat::all() as $tpl)
+                                        <option value="{{ $tpl->id }}">{{ $tpl->nama_template }} ({{ $tpl->kategori }})</option>
+                                    @endforeach
+                                </select>
+                                @error('template_id') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                            </div>
+                            
+
                             <div class="flex justify-end gap-3 pt-3">
                                 <button type="button" wire:click="closeModal"
                                     class="px-4 py-2 rounded-xl bg-gray-200 hover:bg-gray-300 text-gray-700 text-sm shadow-sm transition">
