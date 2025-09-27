@@ -31,10 +31,14 @@
 
     <!-- Table -->
     <div class="w-full p-3 overflow-x-auto bg-white rounded-2xl shadow-lg border border-gray-200">
+<<<<<<< HEAD
         <table class="min-w-[1000px] text-xs sm:text-sm border-collapse">
+=======
+        <table class="w-full text-xs sm:text-sm border-collapse table-auto">
+>>>>>>> c5d2b1d8a1858a85ec39a456751c74e2facead1d
             <thead class="text-gray-600 border-b bg-gray-50/70">
                 <tr>
-                    <th class="p-3 text-left">No</th>
+                    <th class="p-3 text-left w-10">No</th>
                     <th class="p-3 text-left cursor-pointer" wire:click="sortBy('no_surat')">
                         No Surat {!! $sortField === 'no_surat' ? ($sortDirection === 'asc' ? '⬆️' : '⬇️') : '' !!}
                     </th>
@@ -47,10 +51,13 @@
                     <th class="p-3 text-left cursor-pointer" wire:click="sortBy('perihal')">
                         Perihal {!! $sortField === 'perihal' ? ($sortDirection === 'asc' ? '⬆️' : '⬇️') : '' !!}
                     </th>
-                    <th class="p-3 text-left cursor-pointer" wire:click="sortBy('tanggal')">
+                    <th class="p-3 text-left cursor-pointer w-32" wire:click="sortBy('tanggal')">
                         Tanggal {!! $sortField === 'tanggal' ? ($sortDirection === 'asc' ? '⬆️' : '⬇️') : '' !!}
                     </th>
-                    <th class="p-3 text-left">Aksi</th>
+                    <th class="p-3 text-left w-32">File</th>
+                    <th class="p-3 text-left w-32">Dibuat Oleh</th>
+                    <th class="p-3 text-left w-32">Diedit Oleh</th>
+                    <th class="p-3 text-left w-28">Aksi</th>
                 </tr>
             </thead>
             <tbody class="text-gray-700">
@@ -61,7 +68,30 @@
                         <td class="p-3">{{ $surat->unit_pengirim }}</td>
                         <td class="p-3">{{ $surat->unit_penerima }}</td>
                         <td class="p-3">{{ $surat->perihal }}</td>
-                        <td class="p-3">{{ $surat->tanggal }}</td>
+                        <td class="p-3 whitespace-nowrap">{{ $surat->tanggal }}</td>
+
+                        <!-- File link -->
+                        <td class="p-3">
+                            @if ($surat->file_surat)
+                                <a href="{{ Storage::url($surat->file_surat) }}" target="_blank"
+                                    class="text-blue-500 underline hover:text-blue-700">
+                                    📄 Lihat File
+                                </a>
+                            @else
+                                <span class="text-gray-400">Tidak ada file</span>
+                            @endif
+                        </td>
+
+                        <!-- Creator -->
+                        <td class="p-3">
+                            {{ $surat->user->name ?? '-' }}
+                        </td>
+                        <!-- Updater -->
+                        <td class="p-3">
+                            {{ $surat->user->role->name ?? '-' }}
+                        </td>
+
+                        <!-- Aksi -->
                         <td class="p-3 flex gap-2 flex-wrap">
                             <button wire:click="openModal(true, {{ $surat->id }})"
                                 class="px-3 py-1 rounded-xl text-xs bg-yellow-400 text-white shadow hover:bg-yellow-500">
@@ -72,11 +102,20 @@
                                 onclick="return confirm('Yakin hapus surat ini?')">
                                 🗑️ Hapus
                             </button>
+                            <!-- Tombol ke Disposisi -->
+                            <a href="{{ route('disposisi.index', $surat->id) }}"
+                                class="px-3 py-1 rounded-xl text-xs bg-blue-500 text-white shadow hover:bg-blue-600">
+                                📌 Disposisi
+                            </a>
                         </td>
                     </tr>
                 @empty
                     <tr>
+<<<<<<< HEAD
                         <td colspan="7" class="text-center p-4 text-gray-500">
+=======
+                        <td colspan="9" class="text-center p-4 text-gray-500">
+>>>>>>> c5d2b1d8a1858a85ec39a456751c74e2facead1d
                             🙅 Belum ada data surat.
                         </td>
                     </tr>
@@ -85,10 +124,12 @@
         </table>
     </div>
 
+
     <div class="mt-4">
         {{ $surats->links() }}
     </div>
 
+<<<<<<< HEAD
     <!-- Modal -->
     @if ($showModal)
         <div class="fixed inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm z-50 px-4">
@@ -96,19 +137,42 @@
                 <div class="fixed bottom-6 left-6 z-50">
                     <div class="flex items-center gap-3 bg-white/90 backdrop-blur-md rounded-full px-3 py-2 shadow-lg border border-gray-200 cursor-pointer"
                          wire:click="restore">
+=======
+    @if ($isModalOpen)
+        <div class="fixed inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm z-50 px-4">
+            {{-- MINIMIZED BAR --}}
+            @if($isMinimized)
+                <div class="fixed bottom-6 left-6 z-50">
+                    <div
+                        class="flex items-center gap-3 bg-white/90 backdrop-blur-md rounded-full px-3 py-2 shadow-lg border border-gray-200 cursor-pointer"
+                        wire:click="restore">
+>>>>>>> c5d2b1d8a1858a85ec39a456751c74e2facead1d
                         <div class="flex items-center gap-2">
                             <button wire:click.stop="closeModal" class="w-3 h-3 rounded-full bg-red-500 hover:bg-red-600"></button>
                             <button wire:click.stop="restore" class="w-3 h-3 rounded-full bg-yellow-400 hover:bg-yellow-500"></button>
                             <button wire:click.stop="toggleFullscreen" class="w-3 h-3 rounded-full bg-green-500 hover:bg-green-600"></button>
                         </div>
                         <span class="ml-3 text-sm font-medium text-gray-800">
+<<<<<<< HEAD
                             {{ $isEdit ? '✏️ Edit Surat' : '➕ Tambah Surat' }}
+=======
+                            {{ $suratId ? '✏️ Edit Surat' : '➕ Tambah Surat' }}
+>>>>>>> c5d2b1d8a1858a85ec39a456751c74e2facead1d
                         </span>
                     </div>
                 </div>
             @else
+<<<<<<< HEAD
                 <div class="@if($isFullscreen) w-full max-w-none h-[90vh] max-h-[90vh] rounded-xl @else w-full max-w-lg rounded-3xl @endif
                             bg-white/95 backdrop-blur-xl shadow-2xl border border-gray-200 overflow-hidden transition-all duration-200">
+=======
+                {{-- NORMAL / FULLSCREEN MODAL --}}
+                <div
+                    class="@if($isFullscreen) w-full max-w-none h-[90vh] max-h-[90vh] rounded-xl @else w-full max-w-lg rounded-3xl @endif
+                        bg-white/95 backdrop-blur-xl shadow-2xl border border-gray-200 overflow-hidden transition-all duration-200">
+
+                    <!-- Header ala macOS -->
+>>>>>>> c5d2b1d8a1858a85ec39a456751c74e2facead1d
                     <div class="flex items-center justify-between px-3 py-2 bg-gray-50 border-b">
                         <div class="flex items-center space-x-2">
                             <button wire:click="closeModal" class="w-3 h-3 rounded-full bg-red-500 hover:bg-red-600"></button>
@@ -116,11 +180,16 @@
                             <button wire:click="toggleFullscreen" class="w-3 h-3 rounded-full bg-green-500 hover:bg-green-600"></button>
                         </div>
                         <h3 class="text-sm sm:text-base font-semibold text-gray-700">
+<<<<<<< HEAD
                             {{ $isEdit ? '✏️ Edit Surat' : '➕ Tambah Surat' }}
+=======
+                            {{ $suratId ? '✏️ Edit Surat' : '➕ Tambah Surat' }}
+>>>>>>> c5d2b1d8a1858a85ec39a456751c74e2facead1d
                         </h3>
                         <div class="w-6"></div>
                     </div>
 
+<<<<<<< HEAD
                     <div class="p-4 sm:p-6 overflow-auto h-full space-y-4">
                         <form wire:submit.prevent="{{ $isEdit ? 'update' : 'store' }}" class="space-y-4">
                             <input type="text" wire:model="no_surat" placeholder="No Surat"
@@ -182,6 +251,106 @@
                             @endif
 
                             <div class="flex flex-wrap justify-end gap-3 pt-3">
+=======
+                    <!-- Body -->
+                    <div class="p-4 sm:p-6 overflow-auto h-full">
+                        <form wire:submit.prevent="save" class="space-y-4">
+                            <div>
+                                <label class="block mb-1 text-sm font-medium text-gray-600">No Surat</label>
+                                <input type="text" wire:model="no_surat"
+                                    class="w-full border border-gray-300 rounded-xl p-2 text-sm focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition">
+                                @error('no_surat') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                            </div>
+
+                            <div>
+                                <label class="block mb-1 text-sm font-medium text-gray-600">Pengirim</label>
+                                <input type="text" wire:model="pengirim"
+                                    class="w-full border border-gray-300 rounded-xl p-2 text-sm focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition">
+                                @error('pengirim') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                            </div>
+
+                            <div>
+                                <label class="block mb-1 text-sm font-medium text-gray-600">Perihal</label>
+                                <textarea wire:model="perihal"
+                                    class="w-full border border-gray-300 rounded-xl p-2 text-sm focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition"></textarea>
+                                @error('perihal') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                            </div>
+
+                            <div>
+                                <label class="block mb-1 text-sm font-medium text-gray-600">Tanggal</label>
+                                <input type="date" wire:model="tanggal"
+                                    class="w-full border border-gray-300 rounded-xl p-2 text-sm focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition">
+                                @error('tanggal') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                            </div>
+
+                            <div x-data="{
+                                isDropping: false,
+                                preview: null,
+                                handleFiles(event) {
+                                    const file = event.target.files[0];
+                                    if (!file) return;
+                                    this.preview = URL.createObjectURL(file);
+                                },
+                                dropFile(event) {
+                                    const file = event.dataTransfer.files[0];
+                                    if (!file) return;
+                                    this.$refs.fileInput.files = event.dataTransfer.files;
+                                    this.$refs.fileInput.dispatchEvent(new Event('change'));
+                                }
+                                }" 
+                                class="w-full"
+                            >
+                            <label class="block mb-1 text-sm font-medium text-gray-600">File Surat</label>
+                            <!-- Drop area -->
+                            <div
+                                class="relative flex flex-col items-center justify-center w-full border-2 border-dashed rounded-xl cursor-pointer
+                                       transition p-6"
+                                :class="isDropping ? 'border-blue-400 bg-blue-50' : 'border-gray-300 hover:border-blue-400 hover:bg-blue-50'"
+                                @dragover.prevent="isDropping = true"
+                                @dragleave.prevent="isDropping = false"
+                                @drop.prevent="isDropping = false; dropFile($event)"
+                                @click="$refs.fileInput.click()"
+                            >
+                                <!-- Default content -->
+                                <template x-if="!preview">
+                                    <div class="text-center space-y-2">
+                                        <svg class="w-10 h-10 mx-auto text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M7 16V4a2 2 0 012-2h6a2 2 0 012 2v12m-4 4h-4m0 0v-4h4v4z" />
+                                        </svg>
+                                        <p class="text-sm text-gray-500">Tarik & lepaskan file di sini</p>
+                                        <p class="text-xs text-gray-400">atau klik untuk pilih file</p>
+                                    </div>
+                                </template>
+                        
+                                <!-- Preview -->
+                                <template x-if="preview">
+                                    <div class="relative w-full text-center">
+                                        <iframe x-bind:src="preview" class="w-full h-40 rounded-lg border"></iframe>
+                                        <button type="button" @click="preview = null; $refs.fileInput.value = ''"
+                                            class="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 shadow">
+                                            ✕
+                                        </button>
+                                    </div>
+                                </template>
+                        
+                                <!-- Hidden file input -->
+                                <input type="file" wire:model="file_surat" x-ref="fileInput" class="hidden"
+                                    @change="handleFiles($event)">
+                            </div>
+                        
+                            @error('file_surat')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
+                        
+                            <!-- Progress bar Livewire -->
+                            <div wire:loading wire:target="file_surat" class="mt-2 w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-blue-500 h-2 rounded-full animate-pulse w-2/3"></div>
+                            </div>
+                        </div>                                                    
+
+                            <div class="flex justify-end gap-3 pt-3">
+>>>>>>> c5d2b1d8a1858a85ec39a456751c74e2facead1d
                                 <button type="button" wire:click="closeModal"
                                     class="px-4 py-2 rounded-xl bg-gray-200 hover:bg-gray-300 text-gray-700 text-sm shadow-sm transition">
                                     Batal

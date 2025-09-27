@@ -2,6 +2,8 @@
 
 namespace App\Livewire\SuratMasuk;
 
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Livewire\WithFileUploads;
@@ -11,8 +13,11 @@ class SuratMasukManagement extends Component
 {
     use WithPagination, WithFileUploads;
 
+<<<<<<< HEAD
     // Form fields
     public $suratId, $no_surat, $unit_pengirim, $unit_penerima, $perihal, $deskripsi, $tanggal, $tembusan, $file_surat, $existingFile;
+=======
+>>>>>>> c5d2b1d8a1858a85ec39a456751c74e2facead1d
     public $isEdit = false;
     public $showModal = false;
 
@@ -20,7 +25,10 @@ class SuratMasukManagement extends Component
     public $isMinimized = false;
     public $isFullscreen = false;
 
+<<<<<<< HEAD
     // Table controls
+=======
+>>>>>>> c5d2b1d8a1858a85ec39a456751c74e2facead1d
     public $search = '';
     public $perPage = 10;
     public $sortField = 'tanggal';
@@ -43,6 +51,7 @@ class SuratMasukManagement extends Component
 
     public function render()
     {
+<<<<<<< HEAD
         $query = SuratMasuk::query();
 
         if ($this->search) {
@@ -64,6 +73,17 @@ class SuratMasukManagement extends Component
             'surats' => $surats
         ]);
     }
+=======
+        $surats = SuratMasuk::with(['creator', 'updater', 'creatorRole', 'updaterRole'])
+            ->where('no_surat', 'like', "%{$this->search}%")
+            ->orWhere('pengirim', 'like', "%{$this->search}%")
+            ->orWhere('perihal', 'like', "%{$this->search}%")
+            ->orderBy($this->sortField, $this->sortDirection)
+            ->paginate(10);
+    
+        return view('livewire.surat-masuk.surat-masuk-management', ['surats' => $surats]);
+    }    
+>>>>>>> c5d2b1d8a1858a85ec39a456751c74e2facead1d
 
     public function sortBy($field)
     {
@@ -151,9 +171,36 @@ class SuratMasukManagement extends Component
         ];
 
         if ($this->file_surat) {
+<<<<<<< HEAD
             $data['file_surat'] = $this->file_surat->store('surat_masuk_files','public');
         } elseif ($this->existingFile) {
             $data['file_surat'] = $this->existingFile;
+=======
+            // Hapus file lama jika update
+            if ($this->suratId) {
+                $old = SuratMasuk::find($this->suratId);
+                if ($old && $old->file_surat && Storage::disk('public')->exists($old->file_surat)) {
+                    Storage::disk('public')->delete($old->file_surat);
+                }
+            }
+
+            // Buat nama file custom
+            $extension = $this->file_surat->getClientOriginalExtension();
+            $namaFile = Str::slug($this->no_surat . '_' . $this->tanggal . '_' . $this->pengirim . '_' . $this->perihal, '_') . '.' . $extension;
+
+            // Simpan dengan nama custom
+            $data['file_surat'] = $this->file_surat->storeAs('surat_masuk_files', $namaFile, 'public');
+        }
+
+        if ($this->suratId) {
+            // UPDATE
+            $data['updated_by'] = auth()->id();
+            $data['updated_role_id'] = auth()->user()->role_id ?? null;
+        } else {
+            // CREATE
+            $data['created_by'] = auth()->id();
+            $data['created_role_id'] = auth()->user()->role_id ?? null;
+>>>>>>> c5d2b1d8a1858a85ec39a456751c74e2facead1d
         }
 
         SuratMasuk::updateOrCreate(['id' => $this->suratId], $data);
@@ -161,7 +208,7 @@ class SuratMasukManagement extends Component
         session()->flash('message', $this->isEdit ? 'Surat berhasil diperbarui.' : 'Surat berhasil ditambahkan.');
         $this->closeModal();
         $this->resetForm();
-    }
+    }  
 
     public function update()
     {
@@ -173,4 +220,11 @@ class SuratMasukManagement extends Component
         SuratMasuk::findOrFail($id)->delete();
         session()->flash('message', 'Surat berhasil dihapus.');
     }
+
+    /**
+     * Modal controls (tambahan biar tidak error)
+     */
+    public function minimize() { $this->isMinimized = true; }
+    public function restore() { $this->isMinimized = false; }
+    public function toggleFullscreen() { $this->isFullscreen = !$this->isFullscreen; }
 }
