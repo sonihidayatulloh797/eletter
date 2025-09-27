@@ -10,6 +10,7 @@ use App\Livewire\RoleManagement\RoleManagement;
 use App\Livewire\SuratMasuk\SuratMasukManagement;
 use App\Livewire\SuratKeluar\SuratKeluarManagement;
 use App\Livewire\Disposisi\DisposisiManagement;
+use App\Livewire\TamplateSurat\TamplateSuratManagement;
 
 Route::get('/', Login::class)->name('login');
 Route::post('/logout', function () {
@@ -28,5 +29,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/surat-masuk/{id}/disposisi', DisposisiManagement::class)->name('disposisi.management');
     Route::get('/disposisi/{suratMasukId}', DisposisiManagement::class)
     ->name('disposisi.index');
+
+    Route::get('/template-surat', TamplateSuratManagement::class)->name('template-surat.index');
 });
 

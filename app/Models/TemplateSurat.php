@@ -11,7 +11,8 @@ class TemplateSurat extends Model
     protected $fillable = [
         'nama_template',
         'kategori',
-        'file_template'
+        'file_template',
+        'user_id'
     ];
 
     public function user(): BelongsTo

@@ -32,7 +32,8 @@
 
       @if(auth()->user()->hasPermission('manage_templates'))
         <li>
-          <a href="/template-surat" class="flex items-center gap-3 text-gray-700 hover:text-blue-500">
+          <a href="{{ route('template-surat.index') }}" class="flex items-center gap-3 text-gray-700 hover:text-blue-500">
+          {{-- <a href="#" class="flex items-center gap-3 text-gray-700 hover:text-blue-500"> --}}
             📑 <span>Template Surat</span>
           </a>
         </li>
