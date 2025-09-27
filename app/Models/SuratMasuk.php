@@ -16,7 +16,7 @@ class SuratMasuk extends Model
         'user_id',
     ];
 
-    public function disposisi()
+    public function disposisis()
     {
         return $this->hasMany(Disposisi::class, 'surat_masuk_id');
     }
