@@ -28,12 +28,15 @@ class SuratKeluarManagement extends Component
     public $suratId, $no_surat, $tujuan, $perihal, $tanggal, $file_surat;
     public $isModalOpen = false;
 
+    public $template_id;
+
     protected $rules = [
         'no_surat'   => 'required|string|max:100',
         'tujuan'     => 'required|string|max:150',
         'perihal'    => 'required|string|max:200',
         'tanggal'    => 'required|date',
         'file_surat' => 'nullable|file|mimes:pdf,doc,docx|max:2048',
+        'template_id' => 'nullable|exists:template_surat,id',
     ];
 
     public function mount()
@@ -78,6 +81,7 @@ class SuratKeluarManagement extends Component
             $this->tujuan = $surat->tujuan;
             $this->perihal = $surat->perihal;
             $this->tanggal = $surat->tanggal;
+            $this->template_id = $surat->template_id;
         }
 
         $this->isModalOpen = true;
@@ -108,6 +112,7 @@ class SuratKeluarManagement extends Component
             'perihal'  => $this->perihal,
             'tanggal'  => $this->tanggal,
             'user_id'  => auth()->id(),
+            'template_id' => $this->template_id,
         ];
     
         if ($this->file_surat) {
