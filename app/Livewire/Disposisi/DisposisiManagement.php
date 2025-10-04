@@ -32,50 +32,45 @@ class DisposisiManagement extends Component
         'status'  => 'required|in:belum_dibaca,dibaca,ditindaklanjuti',
     ];
 
-    public function mount($suratMasukId)
+    public function mount($suratMasukId = null)
     {
         $this->suratMasukId = $suratMasukId;
     }
 
     public function render()
     {
-        // jika suratMasukId tidak diset, kembalikan view dengan collection kosong agar tidak error
-        if (! $this->suratMasukId) {
-            $disposisis = Disposisi::with('user')->whereRaw('0 = 1')->paginate($this->perPage);
+        if (!$this->suratMasukId) {
+            $disposisis = Disposisi::whereRaw('0=1')->paginate($this->perPage);
             return view('livewire.disposisi.disposisi-management', [
                 'disposisis' => $disposisis,
-                'users'      => User::all(),
-                'surat'      => SuratMasuk::find($this->suratMasukId),
+                'users' => User::all(),
+                'surat' => null,
             ]);
         }
-    
-        // siapkan query builder
+
         $query = Disposisi::with('user')
             ->where('surat_masuk_id', $this->suratMasukId);
-    
-        // Jika ada search, buat satu group where agar `orWhere` tidak keluar dari scope surat_masuk_id
+
         if (!empty($this->search)) {
             $s = "%{$this->search}%";
             $query->where(function ($q) use ($s) {
-                $q->whereHas('user', function ($u) use ($s) {
-                    $u->where('name', 'like', $s);
-                })
-                ->orWhere('catatan', 'like', $s)
-                ->orWhere('status', 'like', $s);
+                $q->whereHas('user', fn($u) => $u->where('name', 'like', $s))
+                  ->orWhere('catatan', 'like', $s)
+                  ->orWhere('status', 'like', $s);
             });
         }
-    
+
         $disposisis = $query
             ->orderBy($this->sortField, $this->sortDirection)
             ->paginate($this->perPage);
-    
+
         return view('livewire.disposisi.disposisi-management', [
             'disposisis' => $disposisis,
             'users'      => User::all(),
             'surat'      => SuratMasuk::find($this->suratMasukId),
         ]);
-    }      
-    
+    }
+
     public function updatingSearch()
     {
         $this->resetPage();
@@ -96,11 +91,11 @@ class DisposisiManagement extends Component
         $this->resetForm();
 
         if ($id) {
-            $disposisi = Disposisi::findOrFail($id);
-            $this->disposisiId = $disposisi->id;
-            $this->user_id     = $disposisi->user_id;
-            $this->catatan     = $disposisi->catatan;
-            $this->status      = $disposisi->status;
+            $d = Disposisi::findOrFail($id);
+            $this->disposisiId = $d->id;
+            $this->user_id     = $d->user_id;
+            $this->catatan     = $d->catatan;
+            $this->status      = $d->status;
         }
 
         $this->isModalOpen = true;
@@ -123,14 +118,15 @@ class DisposisiManagement extends Component
     {
         $this->validate();
 
-        $data = [
-            'surat_masuk_id' => $this->suratMasukId,
-            'user_id'        => $this->user_id,
-            'catatan'        => $this->catatan,
-            'status'         => $this->status ?? 'belum_dibaca',
-        ];
-
-        Disposisi::updateOrCreate(['id' => $this->disposisiId], $data);
+        Disposisi::updateOrCreate(
+            ['id' => $this->disposisiId],
+            [
+                'surat_masuk_id' => $this->suratMasukId,
+                'user_id'        => $this->user_id,
+                'catatan'        => $this->catatan,
+                'status'         => $this->status,
+            ]
+        );
 
         session()->flash('message', $this->disposisiId ? 'Disposisi berhasil diperbarui.' : 'Disposisi berhasil ditambahkan.');
 
@@ -144,9 +140,7 @@ class DisposisiManagement extends Component
         session()->flash('message', 'Disposisi berhasil dihapus.');
     }
 
-    /**
-     * Modal controls (macOS style)
-     */
+    // Modal macOS style
     public function minimize() { $this->isMinimized = true; }
     public function restore() { $this->isMinimized = false; }
     public function toggleFullscreen() { $this->isFullscreen = !$this->isFullscreen; }
