@@ -8,7 +8,9 @@
     <ul class="space-y-4">
       @if(auth()->user()->hasPermission('view_dashboard'))
         <li>
-          <a href="/dashboard" class="flex items-center gap-3 text-gray-700 hover:text-blue-500">
+          <a href="/dashboard" 
+             class="flex items-center gap-3 px-2 py-1 rounded-md 
+             {{ request()->is('dashboard') ? 'bg-blue-100 text-blue-600 font-semibold' : 'text-gray-700 hover:text-blue-500' }}">
             📊 <span>Dashboard</span>
           </a>
         </li>
@@ -16,7 +18,9 @@
 
       @if(auth()->user()->hasPermission('manage_letters_in'))
         <li>
-          <a href="manajemen-suratmasuk" class="flex items-center gap-3 text-gray-700 hover:text-blue-500">
+          <a href="{{ route('manajemen-suratmasuk') }}" 
+             class="flex items-center gap-3 px-2 py-1 rounded-md 
+             {{ request()->is('manajemen-suratmasuk') ? 'bg-blue-100 text-blue-600 font-semibold' : 'text-gray-700 hover:text-blue-500' }}">
             📥 <span>Surat Masuk</span>
           </a>
         </li>
@@ -24,7 +28,9 @@
 
       @if(auth()->user()->hasPermission('manage_letters_out'))
         <li>
-          <a href="/manajemen-suratkeluar" class="flex items-center gap-3 text-gray-700 hover:text-blue-500">
+          <a href="{{ route('manajemen-suratkeluar') }}" 
+             class="flex items-center gap-3 px-2 py-1 rounded-md 
+             {{ request()->is('manajemen-suratkeluar') ? 'bg-blue-100 text-blue-600 font-semibold' : 'text-gray-700 hover:text-blue-500' }}">
             📤 <span>Surat Keluar</span>
           </a>
         </li>
@@ -32,8 +38,9 @@
 
       @if(auth()->user()->hasPermission('manage_templates'))
         <li>
-          <a href="{{ route('template-surat.index') }}" class="flex items-center gap-3 text-gray-700 hover:text-blue-500">
-          {{-- <a href="#" class="flex items-center gap-3 text-gray-700 hover:text-blue-500"> --}}
+          <a href="{{ route('template-surat.index') }}" 
+             class="flex items-center gap-3 px-2 py-1 rounded-md 
+             {{ request()->is('template-surat') ? 'bg-blue-100 text-blue-600 font-semibold' : 'text-gray-700 hover:text-blue-500' }}">
             📑 <span>Template Surat</span>
           </a>
         </li>
@@ -43,7 +50,9 @@
 
       @if(auth()->user()->hasPermission('view_reports'))
         <li>
-          <a href="/laporan" class="flex items-center gap-3 text-gray-700 hover:text-blue-500">
+          <a href="/laporan" 
+             class="flex items-center gap-3 px-2 py-1 rounded-md 
+             {{ request()->is('laporan') ? 'bg-blue-100 text-blue-600 font-semibold' : 'text-gray-700 hover:text-blue-500' }}">
             📈 <span>Laporan</span>
           </a>
         </li>
@@ -51,7 +60,9 @@
 
       @if(auth()->user()->hasPermission('manage_settings'))
         <li>
-          <a href="/pengaturan" class="flex items-center gap-3 text-gray-700 hover:text-blue-500">
+          <a href="/pengaturan" 
+             class="flex items-center gap-3 px-2 py-1 rounded-md 
+             {{ request()->is('pengaturan') ? 'bg-blue-100 text-blue-600 font-semibold' : 'text-gray-700 hover:text-blue-500' }}">
             ⚙️ <span>Pengaturan</span>
           </a>
         </li>
@@ -62,7 +73,8 @@
         <li>
           <button
             @click="openUser = !openUser"
-            class="flex items-center justify-between w-full text-gray-700 hover:text-blue-500"
+            class="flex items-center justify-between w-full 
+              {{ request()->is('manajemen-user') || request()->is('manajemen-role') ? 'text-blue-600 font-semibold' : 'text-gray-700 hover:text-blue-500' }}"
           >
             <span class="flex items-center gap-3">
               👥 <span>Manajemen User</span>
@@ -91,14 +103,18 @@
           >
             @if(auth()->user()->hasPermission('manage_roles'))
               <li>
-                <a href="/manajemen-role" class="flex items-center gap-2 text-gray-600 hover:text-blue-500">
+                <a href="{{ route('manajemen-role') }}" 
+                   class="flex items-center gap-2 px-2 py-1 rounded-md 
+                   {{ request()->is('manajemen-role') ? 'bg-blue-100 text-blue-600 font-semibold' : 'text-gray-600 hover:text-blue-500' }}">
                   🔑 <span>Role</span>
                 </a>
               </li>
             @endif
             @if(auth()->user()->hasPermission('manage_users'))
               <li>
-                <a href="/manajemen-user" class="flex items-center gap-2 text-gray-600 hover:text-blue-500">
+                <a href="{{ route('manajemen-user') }}" 
+                   class="flex items-center gap-2 px-2 py-1 rounded-md 
+                   {{ request()->is('manajemen-user') ? 'bg-blue-100 text-blue-600 font-semibold' : 'text-gray-600 hover:text-blue-500' }}">
                   👤 <span>User</span>
                 </a>
               </li>
