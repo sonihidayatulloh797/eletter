@@ -28,7 +28,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/manajemen-suratkeluar', SuratKeluarManagement::class)->name('manajemen-suratkeluar');
     Route::get('/surat-masuk/{id}/disposisi', DisposisiManagement::class)->name('disposisi.management');
     Route::get('/disposisi/{suratMasukId}', DisposisiManagement::class)
-    ->name('disposisi.index');
+    ->name('disposisi.management');
 
     Route::get('/template-surat', TamplateSuratManagement::class)->name('template-surat.index');
 });
