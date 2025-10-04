@@ -13,57 +13,81 @@ class SuratMasukManagement extends Component
 {
     use WithPagination, WithFileUploads;
 
-<<<<<<< HEAD
-    // Form fields
-    public $suratId, $no_surat, $unit_pengirim, $unit_penerima, $perihal, $deskripsi, $tanggal, $tembusan, $file_surat, $existingFile;
-=======
->>>>>>> c5d2b1d8a1858a85ec39a456751c74e2facead1d
-    public $isEdit = false;
-    public $showModal = false;
+    // Form fields (aku tetap simpan variabel lama juga supaya kode kamu nggak "hilang")
+    public $suratId, $no_surat, $unit_pengirim, $unit_penerima, $perihal, $deskripsi, $tembusan, $tanggal, $file_surat, $existingFile, $pengirim;
 
-    // Modal states (macOS style)
+    // UI states (sediakan BOTH nama agar kompatibel)
+    public $isEdit = false;
+    public $showModal = false;      // nama lama yang kamu gunakan sebelumnya
+    public $isModalOpen = false;    // nama yang dipakai Blade sekarang
     public $isMinimized = false;
     public $isFullscreen = false;
 
-<<<<<<< HEAD
     // Table controls
-=======
->>>>>>> c5d2b1d8a1858a85ec39a456751c74e2facead1d
     public $search = '';
     public $perPage = 10;
     public $sortField = 'tanggal';
     public $sortDirection = 'desc';
 
+    // Disposisi
+    public $isDisposisiOpen = false;
+    public $isDisposisiFullscreen = false;
+    public $isDisposisiMinimized = false;
+    public $selectedSuratId = null;
+    
+    public function openDisposisi($suratId)
+    {
+        $this->selectedSuratId = $suratId;
+        $this->isDisposisiOpen = true;
+    }
+    
+    public function closeDisposisi()
+    {
+        $this->isDisposisiOpen = false;
+        $this->selectedSuratId = null;
+        $this->isDisposisiFullscreen = false;
+        $this->isDisposisiMinimized = false;
+    }
+    
+    public function minimizeDisposisi()
+    {
+        $this->isDisposisiMinimized = true;
+    }
+    
+    public function restoreDisposisi()
+    {
+        $this->isDisposisiMinimized = false;
+    }
+    
+    public function toggleDisposisiFullscreen()
+    {
+        $this->isDisposisiFullscreen = !$this->isDisposisiFullscreen;
+    }    
+
     protected $rules = [
-        'no_surat' => 'required|string|max:100',
-        'unit_pengirim' => 'required|string|max:150',
-        'unit_penerima' => 'required|string|max:150',
-        'perihal' => 'required|string|max:200',
-        'deskripsi' => 'nullable|string',
-        'tanggal' => 'required|date',
-        'tembusan' => 'nullable|string',
+        'no_surat'   => 'required|string|max:100',
+        'pengirim'   => 'required|string|max:150',
+        'perihal'    => 'required|string|max:200',
+        'tanggal'    => 'required|date',
         'file_surat' => 'nullable|file|mimes:pdf,doc,docx|max:2048',
     ];
 
-    // Reset pagination when search/perPage updated
     public function updatingSearch() { $this->resetPage(); }
     public function updatingPerPage() { $this->resetPage(); }
 
     public function render()
     {
-<<<<<<< HEAD
         $query = SuratMasuk::query();
 
         if ($this->search) {
             $query->where(function($q) {
                 $q->where('no_surat', 'like', '%'.$this->search.'%')
-                  ->orWhere('unit_pengirim', 'like', '%'.$this->search.'%')
-                  ->orWhere('unit_penerima', 'like', '%'.$this->search.'%')
+                  ->orWhere('pengirim', 'like', '%'.$this->search.'%')
                   ->orWhere('perihal', 'like', '%'.$this->search.'%');
             });
         }
 
-        $allowedSort = ['no_surat','unit_pengirim','unit_penerima','perihal','tanggal'];
+        $allowedSort = ['no_surat','pengirim','perihal','tanggal'];
         $sortField = in_array($this->sortField, $allowedSort) ? $this->sortField : 'tanggal';
 
         $surats = $query->orderBy($sortField, $this->sortDirection)
@@ -73,17 +97,6 @@ class SuratMasukManagement extends Component
             'surats' => $surats
         ]);
     }
-=======
-        $surats = SuratMasuk::with(['creator', 'updater', 'creatorRole', 'updaterRole'])
-            ->where('no_surat', 'like', "%{$this->search}%")
-            ->orWhere('pengirim', 'like', "%{$this->search}%")
-            ->orWhere('perihal', 'like', "%{$this->search}%")
-            ->orderBy($this->sortField, $this->sortDirection)
-            ->paginate(10);
-    
-        return view('livewire.surat-masuk.surat-masuk-management', ['surats' => $surats]);
-    }    
->>>>>>> c5d2b1d8a1858a85ec39a456751c74e2facead1d
 
     public function sortBy($field)
     {
@@ -96,32 +109,39 @@ class SuratMasukManagement extends Component
         $this->resetPage();
     }
 
-    public function openModal($edit = false, $id = null)
+    /**
+     * Open modal.
+     * Parameter $id = null -> create mode; $id = number -> edit mode
+     */
+    public function openModal($id = null)
     {
         $this->resetForm();
-        $this->isEdit = $edit;
-        $this->isMinimized = false;
-        $this->isFullscreen = false;
+        $this->isEdit = $id ? true : false;
+        $this->suratId = $id;
 
-        if ($edit && $id) {
+        if ($id) {
             $surat = SuratMasuk::findOrFail($id);
-            $this->suratId = $surat->id;
-            $this->no_surat = $surat->no_surat;
-            $this->unit_pengirim = $surat->unit_pengirim;
-            $this->unit_penerima = $surat->unit_penerima;
-            $this->perihal = $surat->perihal;
-            $this->deskripsi = $surat->deskripsi;
-            $this->tanggal = $surat->tanggal;
-            $this->tembusan = $surat->tembusan;
-            $this->existingFile = $surat->file_surat;
+            $this->no_surat      = $surat->no_surat;
+            // legacy props left intact
+            $this->unit_pengirim = $surat->pengirim ?? '';
+            $this->pengirim      = $surat->pengirim ?? '';
+            $this->unit_penerima = null;
+            $this->perihal       = $surat->perihal;
+            $this->deskripsi     = null;
+            $this->tembusan      = null;
+            $this->tanggal       = $surat->tanggal;
+            $this->existingFile  = $surat->file_surat;
         }
 
-        $this->showModal = true;
+        // keep both flags in sync
+        $this->showModal = $this->isModalOpen = true;
+        $this->isMinimized = false;
+        $this->isFullscreen = false;
     }
 
     public function closeModal()
     {
-        $this->showModal = false;
+        $this->showModal = $this->isModalOpen = false;
     }
 
     public function resetForm()
@@ -132,27 +152,12 @@ class SuratMasukManagement extends Component
         $this->unit_penerima = '';
         $this->perihal = '';
         $this->deskripsi = '';
-        $this->tanggal = '';
         $this->tembusan = '';
+        $this->tanggal = '';
         $this->file_surat = null;
         $this->existingFile = null;
+        $this->pengirim = '';
         $this->isEdit = false;
-    }
-
-    // macOS modal controls
-    public function minimize()
-    {
-        $this->isMinimized = true;
-    }
-
-    public function toggleFullscreen()
-    {
-        $this->isFullscreen = ! $this->isFullscreen;
-    }
-
-    public function restore()
-    {
-        $this->isMinimized = false;
     }
 
     public function store()
@@ -160,23 +165,16 @@ class SuratMasukManagement extends Component
         $this->validate();
 
         $data = [
-            'no_surat' => $this->no_surat,
-            'unit_pengirim' => $this->unit_pengirim,
-            'unit_penerima' => $this->unit_penerima,
-            'perihal' => $this->perihal,
-            'deskripsi' => $this->deskripsi,
-            'tanggal' => $this->tanggal,
-            'tembusan' => $this->tembusan,
-            'user_id' => auth()->id(),
+            'no_surat'        => $this->no_surat,
+            'pengirim'        => $this->pengirim,
+            'perihal'         => $this->perihal,
+            'tanggal'         => $this->tanggal,
+            'user_id'         => auth()->id(),
+            'updated_by'      => auth()->id(),
+            'updated_role_id' => auth()->user()->role_id ?? null,
         ];
 
         if ($this->file_surat) {
-<<<<<<< HEAD
-            $data['file_surat'] = $this->file_surat->store('surat_masuk_files','public');
-        } elseif ($this->existingFile) {
-            $data['file_surat'] = $this->existingFile;
-=======
-            // Hapus file lama jika update
             if ($this->suratId) {
                 $old = SuratMasuk::find($this->suratId);
                 if ($old && $old->file_surat && Storage::disk('public')->exists($old->file_surat)) {
@@ -184,46 +182,48 @@ class SuratMasukManagement extends Component
                 }
             }
 
-            // Buat nama file custom
             $extension = $this->file_surat->getClientOriginalExtension();
             $namaFile = Str::slug($this->no_surat . '_' . $this->tanggal . '_' . $this->pengirim . '_' . $this->perihal, '_') . '.' . $extension;
 
-            // Simpan dengan nama custom
             $data['file_surat'] = $this->file_surat->storeAs('surat_masuk_files', $namaFile, 'public');
+        } elseif ($this->existingFile) {
+            $data['file_surat'] = $this->existingFile;
         }
 
         if ($this->suratId) {
-            // UPDATE
-            $data['updated_by'] = auth()->id();
-            $data['updated_role_id'] = auth()->user()->role_id ?? null;
+            SuratMasuk::find($this->suratId)->update($data);
+            session()->flash('message', 'Surat berhasil diperbarui.');
         } else {
-            // CREATE
             $data['created_by'] = auth()->id();
             $data['created_role_id'] = auth()->user()->role_id ?? null;
->>>>>>> c5d2b1d8a1858a85ec39a456751c74e2facead1d
+
+            SuratMasuk::create($data);
+            session()->flash('message', 'Surat berhasil ditambahkan.');
         }
 
-        SuratMasuk::updateOrCreate(['id' => $this->suratId], $data);
-
-        session()->flash('message', $this->isEdit ? 'Surat berhasil diperbarui.' : 'Surat berhasil ditambahkan.');
         $this->closeModal();
         $this->resetForm();
-    }  
+    }
 
     public function update()
     {
-        $this->store(); // Bisa tetap menggunakan store() karena updateOrCreate sudah menangani edit
+        // tetap sediakan jika ada kode lain memanggil update()
+        $this->store();
     }
 
     public function delete($id)
     {
-        SuratMasuk::findOrFail($id)->delete();
+        $surat = SuratMasuk::findOrFail($id);
+
+        if ($surat->file_surat && Storage::disk('public')->exists($surat->file_surat)) {
+            Storage::disk('public')->delete($surat->file_surat);
+        }
+
+        $surat->delete();
         session()->flash('message', 'Surat berhasil dihapus.');
     }
 
-    /**
-     * Modal controls (tambahan biar tidak error)
-     */
+    // Modal controls
     public function minimize() { $this->isMinimized = true; }
     public function restore() { $this->isMinimized = false; }
     public function toggleFullscreen() { $this->isFullscreen = !$this->isFullscreen; }
