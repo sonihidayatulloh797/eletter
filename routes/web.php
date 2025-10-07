@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
-use App\Http\Livewire\Dashboard\Dashboard;
+use App\Livewire\Dashboard\Dashboard;
 use App\Livewire\Auth\Login;
 use App\Livewire\UserManagement\UserManagement;
 use App\Livewire\RoleManagement\RoleManagement;
@@ -21,7 +21,7 @@ Route::post('/logout', function () {
 })->name('logout');
 
 Route::middleware('auth')->group(function () {
-    Route::view('/dashboard', 'livewire.dashboard.dashboard')->name('dashboard');
+    Route::get('/dashboard', Dashboard::class)->name('dashboard');
     Route::get('/manajemen-user', UserManagement::class)->name('manajemen-user');
     Route::get('/manajemen-role', RoleManagement::class)->name('manajemen-role');
     Route::get('/manajemen-suratmasuk', SuratMasukManagement::class)->name('manajemen-suratmasuk');
