@@ -14,7 +14,7 @@ class SuratMasukManagement extends Component
     use WithPagination, WithFileUploads;
 
     // Form fields (aku tetap simpan variabel lama juga supaya kode kamu nggak "hilang")
-    public $suratId, $no_surat, $unit_pengirim, $unit_penerima, $perihal, $deskripsi, $tembusan, $tanggal, $file_surat, $existingFile, $pengirim;
+    public $suratId, $no_surat, $unit_pengirim, $unit_penerima, $perihal, $deskripsi, $tembusan, $tanggal, $file_surat, $existingFile, $pengirim, $penerima, $preview;
 
     // UI states (sediakan BOTH nama agar kompatibel)
     public $isEdit = false;
@@ -67,6 +67,7 @@ class SuratMasukManagement extends Component
     protected $rules = [
         'no_surat'   => 'required|string|max:100',
         'pengirim'   => 'required|string|max:150',
+        'penerima'   => 'required|string|max:150', 
         'perihal'    => 'required|string|max:200',
         'tanggal'    => 'required|date',
         'file_surat' => 'nullable|file|mimes:pdf,doc,docx|max:2048',
@@ -83,11 +84,12 @@ class SuratMasukManagement extends Component
             $query->where(function($q) {
                 $q->where('no_surat', 'like', '%'.$this->search.'%')
                   ->orWhere('pengirim', 'like', '%'.$this->search.'%')
+                  ->orWhere('penerima', 'like', '%'.$this->search.'%')
                   ->orWhere('perihal', 'like', '%'.$this->search.'%');
             });
         }
 
-        $allowedSort = ['no_surat','pengirim','perihal','tanggal'];
+        $allowedSort = ['no_surat','pengirim','penerima','perihal','tanggal'];
         $sortField = in_array($this->sortField, $allowedSort) ? $this->sortField : 'tanggal';
 
         $surats = $query->orderBy($sortField, $this->sortDirection)
@@ -125,6 +127,7 @@ class SuratMasukManagement extends Component
             // legacy props left intact
             $this->unit_pengirim = $surat->pengirim ?? '';
             $this->pengirim      = $surat->pengirim ?? '';
+            $this->penerima      = $surat->penerima ?? '';
             $this->unit_penerima = null;
             $this->perihal       = $surat->perihal;
             $this->deskripsi     = null;
@@ -167,6 +170,7 @@ class SuratMasukManagement extends Component
         $data = [
             'no_surat'        => $this->no_surat,
             'pengirim'        => $this->pengirim,
+            'penerima'        => $this->penerima,
             'perihal'         => $this->perihal,
             'tanggal'         => $this->tanggal,
             'user_id'         => auth()->id(),

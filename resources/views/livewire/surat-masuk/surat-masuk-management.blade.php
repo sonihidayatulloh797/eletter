@@ -45,6 +45,10 @@
                         Pengirim
                         {!! $sortField === 'pengirim' ? ($sortDirection === 'asc' ? '⬆️' : '⬇️') : '' !!}
                     </th>
+                    <th class="p-3 text-left cursor-pointer" wire:click="sortBy('penerima')">
+                        penerima
+                        {!! $sortField === 'penerima' ? ($sortDirection === 'asc' ? '⬆️' : '⬇️') : '' !!}
+                    </th>
                     <th class="p-3 text-left cursor-pointer" wire:click="sortBy('perihal')">
                         Perihal
                         {!! $sortField === 'perihal' ? ($sortDirection === 'asc' ? '⬆️' : '⬇️') : '' !!}
@@ -68,6 +72,7 @@
                         <td class="p-3">{{ $surats->firstItem() + $index }}</td>
                         <td class="p-3 font-medium">{{ $surat->no_surat }}</td>
                         <td class="p-3">{{ $surat->pengirim }}</td>
+                        <td class="p-3">{{ $surat->penerima }}</td>
                         <td class="p-3">{{ $surat->perihal }}</td>
                         <td class="p-3 whitespace-nowrap">{{ $surat->tanggal }}</td>
 
@@ -243,6 +248,16 @@
                                 @enderror
                             </div>
 
+                            {{-- Penerima --}}
+                            <div>
+                                <label class="block mb-1 text-sm font-medium text-gray-600">Penerima</label>
+                                <input type="text" wire:model="penerima"
+                                    class="w-full border border-gray-300 rounded-xl p-2 text-sm focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition">
+                                @error('penerima')
+                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+
                             {{-- Perihal --}}
                             <div>
                                 <label class="block mb-1 text-sm font-medium text-gray-600">Perihal</label>
@@ -267,11 +282,13 @@
                             <div
                                 x-data="{
                                     isDropping: false,
-                                    preview: null,
+                                    preview: @entangle('preview').defer,
+                                    existingPreview: '{{ $existingFile ? Storage::url($existingFile) : '' }}',
                                     handleFiles(event) {
                                         const file = event.target.files[0];
                                         if (!file) return;
                                         this.preview = URL.createObjectURL(file);
+                                        this.existingPreview = null; // hapus preview lama
                                     },
                                     dropFile(event) {
                                         const file = event.dataTransfer.files[0];
@@ -280,7 +297,8 @@
                                         this.$refs.fileInput.dispatchEvent(new Event('change'));
                                     }
                                 }"
-                                class="w-full">
+                                class="w-full"
+                            >
                                 <label class="block mb-1 text-sm font-medium text-gray-600">File Surat</label>
 
                                 {{-- Drop area --}}
@@ -292,7 +310,7 @@
                                     @click="$refs.fileInput.click()">
 
                                     {{-- Default content --}}
-                                    <template x-if="!preview">
+                                    <template x-if="!preview && !existingPreview">
                                         <div class="text-center space-y-2">
                                             <svg class="w-10 h-10 mx-auto text-gray-400"
                                                 fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -304,7 +322,7 @@
                                         </div>
                                     </template>
 
-                                    {{-- Preview --}}
+                                    {{-- Preview file baru --}}
                                     <template x-if="preview">
                                         <div class="relative w-full text-center">
                                             <iframe x-bind:src="preview"
@@ -314,6 +332,20 @@
                                                 class="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 shadow">
                                                 ✕
                                             </button>
+                                        </div>
+                                    </template>
+
+                                    {{-- Preview file lama (existing file) --}}
+                                    <template x-if="!preview && existingPreview">
+                                        <div class="relative w-full text-center">
+                                            <iframe x-bind:src="existingPreview"
+                                                class="w-full h-40 rounded-lg border"></iframe>
+                                            <button type="button"
+                                                @click="existingPreview = null"
+                                                class="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 shadow">
+                                                ✕
+                                            </button>
+                                            <p class="text-xs text-gray-500 mt-2">📄 File lama (klik ✕ untuk menghapus preview, tidak menghapus file di server)</p>
                                         </div>
                                     </template>
 
