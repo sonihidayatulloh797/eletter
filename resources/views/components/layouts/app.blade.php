@@ -10,7 +10,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
 
   {{-- Chart.js (biar dipakai di child view) --}}
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  {{-- <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> --}}
 
   @livewireStyles
 </head>
