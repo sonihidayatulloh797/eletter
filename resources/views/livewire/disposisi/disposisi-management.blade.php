@@ -15,14 +15,7 @@
             class="border rounded px-3 py-2 w-full"
             placeholder="🔍 Cari disposisi..."
         >
-    
-        {{-- Debug binding
-        <div class="mt-2 text-sm text-gray-500">
-            Search value: {{ $search }}
-        </div> --}}
     </div>
-
-    {{-- <div class="text-xs text-gray-500">Debug: search = "{{ $search }}", suratId = "{{ $suratMasukId }}"</div> --}}
 
     {{-- Table --}}
     <div class="overflow-x-auto bg-white shadow rounded-lg">
@@ -49,9 +42,15 @@
                             </span>
                         </td>
                         <td class="px-4 py-2 space-x-2">
-                            <button wire:click="openModal({{ $d->id }})" class="px-3 py-1 rounded-xl text-xs bg-yellow-400 text-white shadow hover:bg-yellow-500">✏️ Edit</button>
-                            <button wire:click="delete({{ $d->id }})" class="px-3 py-1 rounded-xl text-xs bg-red-500 text-white shadow hover:bg-red-600"
-                                onclick="return confirm('Yakin hapus disposisi ini?')">🗑️ Hapus</button>
+                            <button wire:click="openModal({{ $d->id }})" 
+                                class="px-3 py-1 rounded-xl text-xs bg-yellow-400 text-white shadow hover:bg-yellow-500">
+                                ✏️ Edit
+                            </button>
+                            <button wire:click="delete({{ $d->id }})" 
+                                class="px-3 py-1 rounded-xl text-xs bg-red-500 text-white shadow hover:bg-red-600"
+                                onclick="return confirm('Yakin hapus disposisi ini?')">
+                                🗑️ Hapus
+                            </button>
                         </td>
                     </tr>
                 @empty
@@ -69,54 +68,54 @@
 
     {{-- Modal --}}
     @if($isModalOpen)
-    <div class="fixed inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm z-50">
-        <div class="bg-white rounded-xl shadow-lg w-full max-w-lg overflow-hidden
-            @if($isFullscreen) w-full h-full max-w-none m-4 @endif
-            @if($isMinimized) hidden @endif">
-            
-            {{-- Modal Header with macOS buttons --}}
-            <div class="flex items-center justify-between bg-gray-50 px-4 py-2 border-b">
-                <div class="flex items-center gap-2">
-                    <button wire:click="closeModal" class="w-3 h-3 rounded-full bg-red-500 hover:bg-red-600"></button>
-                    <button wire:click="restore" class="w-3 h-3 rounded-full bg-yellow-400 hover:bg-yellow-500"></button>
-                    <button wire:click="toggleFullscreen" class="w-3 h-3 rounded-full bg-green-500 hover:bg-green-600"></button>
+        <div class="fixed inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm z-50">
+            <div class="bg-white rounded-xl shadow-lg w-full max-w-lg overflow-hidden
+                @if($isFullscreen) w-full h-full max-w-none m-4 @endif
+                @if($isMinimized) hidden @endif">
+                
+                {{-- Modal Header with macOS buttons --}}
+                <div class="flex items-center justify-between bg-gray-50 px-4 py-2 border-b">
+                    <div class="flex items-center gap-2">
+                        <button wire:click="closeModal" class="w-3 h-3 rounded-full bg-red-500 hover:bg-red-600"></button>
+                        <button wire:click="restore" class="w-3 h-3 rounded-full bg-yellow-400 hover:bg-yellow-500"></button>
+                        <button wire:click="toggleFullscreen" class="w-3 h-3 rounded-full bg-green-500 hover:bg-green-600"></button>
+                    </div>
+                    <h2 class="font-semibold">{{ $disposisiId ? 'Edit Disposisi' : 'Tambah Disposisi' }}</h2>
+                    <span></span>
                 </div>
-                <h2 class="font-semibold">{{ $disposisiId ? 'Edit Disposisi' : 'Tambah Disposisi' }}</h2>
-                <span></span>
-            </div>
 
-            {{-- Modal Body --}}
-            <div class="p-4 space-y-4">
-                <div>
-                    <label class="block text-sm font-medium">User</label>
-                    <select wire:model="user_id" class="w-full border rounded-lg px-3 py-2">
-                        <option value="">-- Pilih User --</option>
-                        @foreach($users as $user)
-                            <option value="{{ $user->id }}">{{ $user->name }}</option>
-                        @endforeach
-                    </select>
-                    @error('user_id') <p class="text-red-500 text-xs">{{ $message }}</p> @enderror
+                {{-- Modal Body --}}
+                <div class="p-4 space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium">User</label>
+                        <select wire:model="user_id" class="w-full border rounded-lg px-3 py-2">
+                            <option value="">-- Pilih User --</option>
+                            @foreach($users as $user)
+                                <option value="{{ $user->id }}">{{ $user->name }}</option>
+                            @endforeach
+                        </select>
+                        @error('user_id') <p class="text-red-500 text-xs">{{ $message }}</p> @enderror
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium">Catatan</label>
+                        <textarea wire:model="catatan" class="w-full border rounded-lg px-3 py-2"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium">Status</label>
+                        <select wire:model="status" class="w-full border rounded-lg px-3 py-2">
+                            <option value="belum_dibaca">Belum Dibaca</option>
+                            <option value="dibaca">Dibaca</option>
+                            <option value="ditindaklanjuti">Ditindaklanjuti</option>
+                        </select>
+                    </div>
                 </div>
-                <div>
-                    <label class="block text-sm font-medium">Catatan</label>
-                    <textarea wire:model="catatan" class="w-full border rounded-lg px-3 py-2"></textarea>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium">Status</label>
-                    <select wire:model="status" class="w-full border rounded-lg px-3 py-2">
-                        <option value="belum_dibaca">Belum Dibaca</option>
-                        <option value="dibaca">Dibaca</option>
-                        <option value="ditindaklanjuti">Ditindaklanjuti</option>
-                    </select>
-                </div>
-            </div>
 
-            {{-- Modal Footer --}}
-            <div class="flex justify-end gap-2 bg-gray-50 px-4 py-2 border-t">
-                <button wire:click="closeModal" class="px-4 py-2 bg-gray-200 rounded-lg">Batal</button>
-                <button wire:click="save" class="px-4 py-2 bg-blue-600 text-white rounded-lg">Simpan</button>
+                {{-- Modal Footer --}}
+                <div class="flex justify-end gap-2 bg-gray-50 px-4 py-2 border-t">
+                    <button wire:click="closeModal" class="px-4 py-2 bg-gray-200 rounded-lg">Batal</button>
+                    <button wire:click="save" class="px-4 py-2 bg-blue-600 text-white rounded-lg">Simpan</button>
+                </div>
             </div>
         </div>
-    </div>
     @endif
 </div>
