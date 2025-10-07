@@ -13,47 +13,52 @@ class SuratKeluarManagement extends Component
 {
     use WithPagination, WithFileUploads;
 
-    public $isEdit = false;
-    public $showModal = false;
+    // Form fields
+    public $suratId, $no_surat, $pengirim, $penerima, $perihal, $tanggal, $file_surat, $existingFile, $preview;
 
-    // Modal states (macOS style)
+    // UI states
+    public $isEdit = false;
+    public $showModal = false;      // nama lama (kompatibilitas)
+    public $isModalOpen = false;    // nama baru (Blade)
     public $isMinimized = false;
     public $isFullscreen = false;
 
+    // Table controls
     public $search = '';
     public $perPage = 10;
     public $sortField = 'tanggal';
     public $sortDirection = 'desc';
 
-    public $suratId, $no_surat, $tujuan, $perihal, $tanggal, $file_surat;
-    public $isModalOpen = false;
-
-    public $template_id;
-
     protected $rules = [
         'no_surat'   => 'required|string|max:100',
-        'tujuan'     => 'required|string|max:150',
+        'pengirim'   => 'required|string|max:150',
+        'penerima'   => 'required|string|max:150',
         'perihal'    => 'required|string|max:200',
         'tanggal'    => 'required|date',
         'file_surat' => 'nullable|file|mimes:pdf,doc,docx|max:2048',
-        'template_id' => 'nullable|exists:template_surat,id',
     ];
 
-    public function mount()
-    {
-        if (!auth()->user()->role->permissions->contains('name', 'manage_letters_out')) {
-            abort(403, 'Anda tidak memiliki akses ke halaman ini');
-        }
-    }
+    public function updatingSearch() { $this->resetPage(); }
+    public function updatingPerPage() { $this->resetPage(); }
 
     public function render()
     {
-        $surats = SuratKeluar::with(['creator', 'updater', 'creatorRole', 'updaterRole'])
-            ->where('no_surat', 'like', "%{$this->search}%")
-            ->orWhere('tujuan', 'like', "%{$this->search}%")
-            ->orWhere('perihal', 'like', "%{$this->search}%")
-            ->orderBy($this->sortField, $this->sortDirection)
-            ->paginate($this->perPage);
+        $query = SuratKeluar::query();
+
+        if ($this->search) {
+            $query->where(function($q) {
+                $q->where('no_surat', 'like', '%'.$this->search.'%')
+                  ->orWhere('pengirim', 'like', '%'.$this->search.'%')
+                  ->orWhere('penerima', 'like', '%'.$this->search.'%')
+                  ->orWhere('perihal', 'like', '%'.$this->search.'%');
+            });
+        }
+
+        $allowedSort = ['no_surat', 'pengirim', 'penerima', 'perihal', 'tanggal'];
+        $sortField = in_array($this->sortField, $allowedSort) ? $this->sortField : 'tanggal';
+
+        $surats = $query->orderBy($sortField, $this->sortDirection)
+                        ->paginate($this->perPage);
 
         return view('livewire.surat-keluar.surat-keluar-management', [
             'surats' => $surats
@@ -68,97 +73,118 @@ class SuratKeluarManagement extends Component
             $this->sortField = $field;
             $this->sortDirection = 'asc';
         }
+        $this->resetPage();
     }
 
+    /**
+     * Open modal.
+     * Parameter $id = null -> create mode; $id = number -> edit mode
+     */
     public function openModal($id = null)
     {
         $this->resetForm();
+        $this->isEdit = $id ? true : false;
+        $this->suratId = $id;
 
         if ($id) {
             $surat = SuratKeluar::findOrFail($id);
-            $this->suratId = $surat->id;
-            $this->no_surat = $surat->no_surat;
-            $this->tujuan = $surat->tujuan;
-            $this->perihal = $surat->perihal;
-            $this->tanggal = $surat->tanggal;
-            $this->template_id = $surat->template_id;
+            $this->no_surat     = $surat->no_surat;
+            $this->pengirim     = $surat->pengirim;
+            $this->penerima     = $surat->penerima;
+            $this->perihal      = $surat->perihal;
+            $this->tanggal      = $surat->tanggal;
+            $this->existingFile = $surat->file_surat;
         }
 
-        $this->isModalOpen = true;
+        // keep both flags in sync
+        $this->showModal = $this->isModalOpen = true;
+        $this->isMinimized = false;
+        $this->isFullscreen = false;
     }
 
     public function closeModal()
     {
-        $this->isModalOpen = false;
+        $this->showModal = $this->isModalOpen = false;
     }
 
     public function resetForm()
     {
         $this->suratId = null;
         $this->no_surat = '';
-        $this->tujuan = '';
+        $this->pengirim = '';
+        $this->penerima = '';
         $this->perihal = '';
         $this->tanggal = '';
         $this->file_surat = null;
+        $this->existingFile = null;
+        $this->isEdit = false;
     }
 
-    public function save()
+    public function store()
     {
         $this->validate();
-    
+
         $data = [
-            'no_surat' => $this->no_surat,
-            'tujuan'   => $this->tujuan,
-            'perihal'  => $this->perihal,
-            'tanggal'  => $this->tanggal,
-            'user_id'  => auth()->id(),
-            'template_id' => $this->template_id,
+            'no_surat'        => $this->no_surat,
+            'pengirim'        => $this->pengirim,
+            'penerima'        => $this->penerima,
+            'perihal'         => $this->perihal,
+            'tanggal'         => $this->tanggal,
+            'user_id'         => auth()->id(),
+            'updated_by'      => auth()->id(),
+            'updated_role_id' => auth()->user()->role_id ?? null,
         ];
-    
+
         if ($this->file_surat) {
-            // Jika update hapus file lama
             if ($this->suratId) {
                 $old = SuratKeluar::find($this->suratId);
                 if ($old && $old->file_surat && Storage::disk('public')->exists($old->file_surat)) {
                     Storage::disk('public')->delete($old->file_surat);
                 }
             }
-    
-            // Buat nama file custom berdasarkan field
+
             $extension = $this->file_surat->getClientOriginalExtension();
-            $namaFile = Str::slug($this->no_surat . '_' . $this->tanggal . '_' . $this->tujuan . '_' . $this->perihal, '_') . '.' . $extension;
-    
-            // Simpan file dengan nama custom
+            $namaFile = Str::slug($this->no_surat . '_' . $this->tanggal . '_' . $this->pengirim . '_' . $this->perihal, '_') . '.' . $extension;
+
             $data['file_surat'] = $this->file_surat->storeAs('surat_keluar_files', $namaFile, 'public');
+        } elseif ($this->existingFile) {
+            $data['file_surat'] = $this->existingFile;
         }
-    
+
         if ($this->suratId) {
-            // UPDATE
-            $data['updated_by'] = auth()->id();
-            $data['updated_role_id'] = auth()->user()->role_id ?? null;
+            SuratKeluar::find($this->suratId)->update($data);
+            session()->flash('message', 'Surat keluar berhasil diperbarui.');
         } else {
-            // CREATE
             $data['created_by'] = auth()->id();
             $data['created_role_id'] = auth()->user()->role_id ?? null;
+
+            SuratKeluar::create($data);
+            session()->flash('message', 'Surat keluar berhasil ditambahkan.');
         }
-    
-        SuratKeluar::updateOrCreate(['id' => $this->suratId], $data);
-    
-        session()->flash('message', $this->suratId ? 'Surat keluar berhasil diperbarui.' : 'Surat keluar berhasil ditambahkan.');
-    
+
         $this->closeModal();
         $this->resetForm();
     }
 
+    public function update()
+    {
+        // tetap sediakan jika ada kode lain memanggil update()
+        $this->store();
+    }
+
     public function delete($id)
     {
-        SuratKeluar::findOrFail($id)->delete();
+        $surat = SuratKeluar::findOrFail($id);
+
+        if ($surat->file_surat && Storage::disk('public')->exists($surat->file_surat)) {
+            Storage::disk('public')->delete($surat->file_surat);
+        }
+
+        $surat->delete();
         session()->flash('message', 'Surat keluar berhasil dihapus.');
     }
 
-    /**
-     * Modal controls (tambahan biar tidak error)
-     */
+    // Modal controls
     public function minimize() { $this->isMinimized = true; }
     public function restore() { $this->isMinimized = false; }
     public function toggleFullscreen() { $this->isFullscreen = !$this->isFullscreen; }
