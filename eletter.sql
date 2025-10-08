@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.1
+-- version 5.2.2
 -- https://www.phpmyadmin.net/
 --
--- Host: localhost:3306
--- Generation Time: Sep 11, 2025 at 10:58 AM
--- Server version: 8.0.30
--- PHP Version: 8.2.0
+-- Host: localhost
+-- Generation Time: Oct 07, 2025 at 07:27 AM
+-- Server version: 9.3.0
+-- PHP Version: 8.3.20
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -32,14 +32,6 @@ CREATE TABLE `cache` (
   `value` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `expiration` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `cache`
---
-
-INSERT INTO `cache` (`key`, `value`, `expiration`) VALUES
-('laravel-cache-ac3478d69a3c81fa62e60f5c3696165a4e5e6ac4', 'i:1;', 1757584917),
-('laravel-cache-ac3478d69a3c81fa62e60f5c3696165a4e5e6ac4:timer', 'i:1757584917;', 1757584917);
 
 -- --------------------------------------------------------
 
@@ -68,6 +60,14 @@ CREATE TABLE `disposisi` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `disposisi`
+--
+
+INSERT INTO `disposisi` (`id`, `surat_masuk_id`, `user_id`, `catatan`, `status`, `created_at`, `updated_at`) VALUES
+(4, 5, 7, 'tes', 'dibaca', '2025-09-27 01:29:33', '2025-09-27 01:36:05'),
+(7, 5, 5, 'tes', 'belum_dibaca', '2025-10-03 01:57:04', '2025-10-03 01:57:04');
 
 -- --------------------------------------------------------
 
@@ -235,14 +235,25 @@ CREATE TABLE `surat_keluar` (
   `id` bigint NOT NULL,
   `user_id` bigint DEFAULT NULL,
   `no_surat` varchar(100) NOT NULL,
-  `tujuan` varchar(150) NOT NULL,
+  `pengirim` varchar(150) NOT NULL,
+  `penerima` varchar(150) DEFAULT NULL,
   `perihal` varchar(200) NOT NULL,
   `tanggal` date NOT NULL,
   `file_surat` varchar(255) DEFAULT NULL,
-  `status` enum('draft','dikirim','selesai') DEFAULT 'draft',
   `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `created_by` bigint DEFAULT NULL,
+  `updated_by` bigint DEFAULT NULL,
+  `created_role_id` bigint DEFAULT NULL,
+  `updated_role_id` bigint DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `surat_keluar`
+--
+
+INSERT INTO `surat_keluar` (`id`, `user_id`, `no_surat`, `pengirim`, `penerima`, `perihal`, `tanggal`, `file_surat`, `created_at`, `updated_at`, `created_by`, `updated_by`, `created_role_id`, `updated_role_id`) VALUES
+(8, 5, 'nokel', 'soni', 'tes', 'pinjam ruang 03', '2025-01-01', 'surat_keluar_files/nokel_2025_01_01_soni_pinjam_ruang_03.pdf', '2025-10-05 21:21:00', '2025-10-06 20:31:49', 5, 5, 1, 1);
 
 -- --------------------------------------------------------
 
@@ -254,20 +265,28 @@ CREATE TABLE `surat_masuk` (
   `id` bigint NOT NULL,
   `no_surat` varchar(100) NOT NULL,
   `pengirim` varchar(150) NOT NULL,
+  `penerima` varchar(50) DEFAULT NULL,
   `perihal` varchar(200) NOT NULL,
   `tanggal` date NOT NULL,
   `file_surat` varchar(255) DEFAULT NULL,
   `user_id` bigint DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `created_by` bigint DEFAULT NULL,
+  `updated_by` bigint DEFAULT NULL,
+  `created_role_id` bigint DEFAULT NULL,
+  `updated_role_id` bigint DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `surat_masuk`
 --
 
-INSERT INTO `surat_masuk` (`id`, `no_surat`, `pengirim`, `perihal`, `tanggal`, `file_surat`, `user_id`, `created_at`, `updated_at`) VALUES
-(1, '010010', 'soni', 'tes', '2025-01-01', NULL, 5, '2025-09-11 03:00:59', '2025-09-11 03:00:59');
+INSERT INTO `surat_masuk` (`id`, `no_surat`, `pengirim`, `penerima`, `perihal`, `tanggal`, `file_surat`, `user_id`, `created_at`, `updated_at`, `created_by`, `updated_by`, `created_role_id`, `updated_role_id`) VALUES
+(5, 'noref0001', 'Soni', 'tes', 'Peminjaman tas', '2025-01-03', 'surat_masuk_files/noref0001_2025_01_03_soni_peminjaman_tas.pdf', 5, '2025-09-25 08:16:53', '2025-10-06 20:13:48', NULL, 5, NULL, 1),
+(8, 'son', 'soni', NULL, 'soni pinjam', '2025-01-01', 'surat_masuk_files/son_2025_01_01_soni_soni_pinjam.pdf', 5, '2025-10-02 22:47:27', '2025-10-02 22:47:27', 5, 5, 1, 1),
+(10, 'nosumas01', 'Soni', NULL, 'pinjam peralatan', '2025-01-01', 'surat_masuk_files/nosumas01_2025_01_01_soni_pinjam_peralatan.pdf', 10, '2025-10-05 21:21:58', '2025-10-05 21:21:58', 10, 10, 4, 4),
+(11, 'no001', 'unit 12', 'unit 2', 'pinjam ruangan', '2025-01-01', 'surat_masuk_files/no001_2025_01_01_unit_1_pinjam_ruangan.pdf', 5, '2025-10-06 20:17:13', '2025-10-06 20:55:34', 5, 5, 1, 1);
 
 -- --------------------------------------------------------
 
@@ -284,6 +303,13 @@ CREATE TABLE `template_surat` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `template_surat`
+--
+
+INSERT INTO `template_surat` (`id`, `user_id`, `nama_template`, `kategori`, `file_template`, `created_at`, `updated_at`) VALUES
+(4, 5, 'Peminjaman', 'peminjaman', 'templates/peminjaman_20250927_121623.pdf', '2025-09-27 05:16:16', '2025-09-27 05:16:23');
 
 -- --------------------------------------------------------
 
@@ -307,12 +333,11 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`id`, `name`, `email`, `password`, `created_at`, `updated_at`, `role_id`) VALUES
 (2, 'Staff TU', 'staff@example.com', '$2y$12$dIzFQZcXgDBi.yhbTVy5heiJbBbUNJzqWTTMolgV5zKRO2umlsef2', '2025-09-09 01:34:49', '2025-09-10 02:47:14', 1),
-(5, 'Super Admin', 'superadmin@gmail.com', '$2y$12$Edpc8issE0ZFuwqgGAicPOedRymI.vy95pNTPUBkE6Cs3QcxY6LhK', '2025-09-09 10:19:48', '2025-09-09 04:45:33', 1),
+(5, 'Super Admin', 'superadmin@gmail.com', '$2y$12$QxMhzdHRx2.1/tjEmRaoh.gem4ZbLB53P64mXAhzmSDK3b1jziHcC', '2025-09-09 10:19:48', '2025-09-24 13:22:20', 1),
 (7, 'Superadmin', 'spdmin@gmail.com', '$2y$12$gTccYnSbGHKK3HWr4w1Xauv9w5hNfJaOHAq2BLwYUHfBXy9Gx7xOa', '2025-09-09 21:19:59', '2025-09-09 21:19:59', 1),
 (10, 'soni', 'soni7@gmail.com', '$2y$12$xFsklOnekP9LYdWWDgVcL.EisVHDxj7Uw2yw1wEBTbdWdMjjhM.OK', '2025-09-10 01:41:26', '2025-09-10 01:41:26', 4),
 (11, 'Mahasiswa', 'mhs@gmail.com', '$2y$12$VFW2SViAdcMn.ULLifVes.5ixiV0AlaRJbgpuDnl0nXURd83JVc/S', '2025-09-10 20:30:26', '2025-09-10 20:30:26', 4),
-(12, 'dosen', 'dosen@gmail.com', '$2y$12$tGuOmfRdmqrDAoPnObSg/u55tPTSe6CYkJUTBvHWdi/ZpL.KgkbKW', '2025-09-10 21:12:09', '2025-09-10 21:12:24', 3),
-(13, 'sad', 'tes@gmail.com', '$2y$12$YW58RFfUD006FunoOyxDzuN.bet6Z3yFJ7001ZfNXhsZtlJAe6HGe', '2025-09-11 03:15:12', '2025-09-11 03:15:12', 1);
+(12, 'dosen', 'dosen@gmail.com', '$2y$12$tGuOmfRdmqrDAoPnObSg/u55tPTSe6CYkJUTBvHWdi/ZpL.KgkbKW', '2025-09-10 21:12:09', '2025-09-10 21:12:24', 3);
 
 --
 -- Indexes for dumped tables
@@ -422,7 +447,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `disposisi`
 --
 ALTER TABLE `disposisi`
-  MODIFY `id` bigint NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `failed_jobs`
@@ -452,25 +477,25 @@ ALTER TABLE `permissions`
 -- AUTO_INCREMENT for table `roles`
 --
 ALTER TABLE `roles`
-  MODIFY `id` bigint NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` bigint NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `surat_keluar`
 --
 ALTER TABLE `surat_keluar`
-  MODIFY `id` bigint NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `surat_masuk`
 --
 ALTER TABLE `surat_masuk`
-  MODIFY `id` bigint NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `template_surat`
 --
 ALTER TABLE `template_surat`
-  MODIFY `id` bigint NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `users`
