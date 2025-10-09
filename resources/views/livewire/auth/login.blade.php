@@ -34,10 +34,17 @@
 
             <!-- Password -->
             <div>
-                <label class="block mb-1 text-sm font-semibold text-gray-700">Password</label>
+                <div class="flex justify-between items-center mb-1">
+                    <label class="text-sm font-semibold text-gray-700">Password</label>
+                    <!-- 🔗 Tombol lupa password -->
+                    <a href="{{ route('password.request') }}" 
+                    class="text-sm text-blue-500 hover:text-blue-600 font-medium">
+                        Lupa Password?
+                    </a>
+                </div>
                 <input type="password" wire:model="password"
-                       class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-600 focus:border-blue-600 outline-none transition"
-                       placeholder="Masukkan password" required>
+                    class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-600 focus:border-blue-600 outline-none transition"
+                    placeholder="Masukkan password" required>
                 @error('password') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
             </div>
 
