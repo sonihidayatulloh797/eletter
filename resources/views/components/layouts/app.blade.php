@@ -65,9 +65,10 @@
         <div class="relative">
           <button @click="userOpen = !userOpen" class="flex items-center gap-2 focus:outline-none">
             {{-- Avatar User --}}
-            <img src="{{ Auth::user()->profile_photo_url ?? asset('images/default-avatar.png') }}"
-                 alt="User Avatar"
-                 class="w-8 h-8 rounded-full border border-gray-300 object-cover">
+            {{-- SVG User --}}
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-gray-600" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5Zm0 2c-3.3 0-10 1.7-10 5v3h20v-3c0-3.3-6.7-5-10-5Z"/>
+            </svg>
             <span class="text-sm font-medium text-gray-700">{{ Auth::user()->name ?? 'Pengguna' }}</span>
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-600" fill="none"
                  viewBox="0 0 24 24" stroke="currentColor">
@@ -93,7 +94,7 @@
               </li>
 
               {{-- Menu dinamis berdasarkan role --}}
-              {{-- @if(optional(Auth::user()->role)->name === 'Admin')
+              @if(optional(Auth::user()->role)->name === 'Admin')
                 <li>
                   <a href="{{ route('arsip.admin') }}" class="block px-4 py-2 hover:bg-gray-50">📂 Arsip Semua Surat</a>
                 </li>
@@ -101,7 +102,7 @@
                 <li>
                   <a href="{{ route('arsip.user') }}" class="block px-4 py-2 hover:bg-gray-50">📁 Arsip Saya</a>
                 </li>
-              @endif --}}
+              @endif
 
               <li>
                 <form method="POST" action="{{ route('logout') }}">
