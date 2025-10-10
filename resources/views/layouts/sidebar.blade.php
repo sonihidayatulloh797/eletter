@@ -58,16 +58,6 @@
         </li>
       @endif
 
-      @if(auth()->user()->hasPermission('manage_settings'))
-        <li>
-          <a href="/pengaturan" 
-             class="flex items-center gap-3 px-2 py-1 rounded-md 
-             {{ request()->is('pengaturan') ? 'bg-blue-100 text-blue-600 font-semibold' : 'text-gray-700 hover:text-blue-500' }}">
-            ⚙️ <span>Pengaturan</span>
-          </a>
-        </li>
-      @endif
-
       {{-- 🔽 Menu Manajemen User --}}
       @if(auth()->user()->hasPermission('manage_users') || auth()->user()->hasPermission('manage_roles'))
         <li>
