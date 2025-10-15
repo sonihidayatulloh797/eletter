@@ -16,6 +16,10 @@ use App\Livewire\SuratKeluar\SuratKeluarManagement;
 use App\Livewire\Disposisi\DisposisiManagement;
 use App\Livewire\TamplateSurat\TamplateSuratManagement;
 
+use App\Livewire\Arsip\ArsipAdmin;
+use App\Livewire\Arsip\ArsipUser;
+use App\Livewire\Laporan\LaporanManagement;
+
 Route::get('/', Login::class)->name('login');
 Route::get('/forgot-password', ForgotPassword::class)->name('password.request');
 Route::get('/reset-password/{email}', ResetPassword::class)->name('password.reset');
@@ -30,6 +34,10 @@ Route::post('/logout', function () {
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', Dashboard::class)->name('dashboard');
     Route::get('/profile', Profile::class)->name('profile.show');
+
+    Route::get('/arsip/admin', ArsipAdmin::class)->name('arsip.admin');
+    Route::get('/arsip/user', ArsipUser::class)->name('arsip.user');
+
     Route::get('/manajemen-user', UserManagement::class)->name('manajemen-user');
     Route::get('/manajemen-role', RoleManagement::class)->name('manajemen-role');
     Route::get('/manajemen-suratmasuk', SuratMasukManagement::class)->name('manajemen-suratmasuk');
@@ -37,6 +45,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/surat-masuk/{id}/disposisi', DisposisiManagement::class)->name('disposisi.management');
     Route::get('/disposisi/{suratMasukId}', DisposisiManagement::class)
     ->name('disposisi.management');
+    Route::get('/laporan', LaporanManagement::class)->name('laporan.index');
 
     Route::get('/template-surat', TamplateSuratManagement::class)->name('template-surat.index');
 });
